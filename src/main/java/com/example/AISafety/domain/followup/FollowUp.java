@@ -2,16 +2,21 @@ package com.example.AISafety.domain.followup;
 
 import com.example.AISafety.domain.animal.Animal;
 import com.example.AISafety.domain.organization.Organization;
+import com.example.AISafety.domain.post.Post;
 import com.example.AISafety.domain.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,7 +32,7 @@ public class FollowUp {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name="animal_id", nullable = false)
     private Animal animal;
 
@@ -39,8 +44,11 @@ public class FollowUp {
     @JoinColumn(name= "organization_id", nullable = false)
     private Organization organization;
 
-    @Column(nullable = false)
-    private String status="PENDING";
+    @OneToMany(mappedBy = "followup")
+    private List<Post> posts;
+
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

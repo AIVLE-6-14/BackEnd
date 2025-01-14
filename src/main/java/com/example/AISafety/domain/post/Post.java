@@ -36,7 +36,7 @@ public class Post {
 
     @ManyToOne
     @JoinColumn(name="followup_id", nullable = false)
-    private FollowUp followUp;
+    private FollowUp followup;
 
     private LocalDateTime createdAt;
 

@@ -1,5 +1,6 @@
 package com.example.AISafety.domain.organization;
 
+import com.example.AISafety.domain.followup.FollowUp;
 import com.example.AISafety.domain.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -30,16 +32,14 @@ public class Organization {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @Enumerated(EnumType.STRING)
-    private RoleType role;
-
-    private String phoneNumber;
+    private String number;
     private String address;
 
     // user와의 관계 (1:N)
     @OneToMany(mappedBy = "organization")
     private List<User> users;
 
-    // followUp
-
+    // followUp과의 관계(1:N)
+    @OneToMany(mappedBy = "organization")
+    private List<FollowUp> followup;
 }
