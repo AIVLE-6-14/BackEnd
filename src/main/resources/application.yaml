@@ -8,6 +8,10 @@ spring:
     console:
       enabled: true  # H2 ?? ???
       path: /h2-console  # H2 ?? ?? (???: /h2-console)
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect  # JPA? ?? H2 Dialect ??
     hibernate:
