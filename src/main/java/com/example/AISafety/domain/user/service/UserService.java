@@ -3,6 +3,7 @@ package com.example.AISafety.domain.user.service;
 import com.example.AISafety.domain.organization.Organization;
 import com.example.AISafety.domain.organization.repository.OrganizationRepository;
 import com.example.AISafety.domain.user.User;
+import com.example.AISafety.domain.user.dto.UserLoginDTO;
 import com.example.AISafety.domain.user.dto.UserSignupDTO;
 import com.example.AISafety.domain.user.repository.UserRepository;
 import java.time.LocalDateTime;
@@ -34,5 +35,23 @@ public class UserService {
             userRepository.save(user);
         }
 
+    }
+
+    public boolean authenticateUser(UserLoginDTO loginDTO){
+        User user = userRepository.findByEmail(loginDTO.getEmail());
+
+        if(user != null && user.getPassWord().equals(loginDTO.getPassWord())){
+            return true;
+        }
+        return false;
+    }
+
+    public User getUserByEmail(UserLoginDTO loginDTO){
+        return userRepository.findByEmail(loginDTO.getEmail());
+    }
+
+    public User getUserById(Long id){
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("해당 user를 찾을 수 없습니다."));
     }
 }
