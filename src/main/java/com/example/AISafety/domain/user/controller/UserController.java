@@ -1,7 +1,9 @@
 package com.example.AISafety.domain.user.controller;
 
 import com.example.AISafety.domain.user.User;
+import com.example.AISafety.domain.user.dto.UserEmailDupDTO;
 import com.example.AISafety.domain.user.dto.UserLoginDTO;
+import com.example.AISafety.domain.user.dto.UserResponseDTO;
 import com.example.AISafety.domain.user.dto.UserSignupDTO;
 import com.example.AISafety.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,21 +38,31 @@ public class UserController {
     //세션 기반 로그인 구현, 추후 JWT로 변경 예정
     @PostMapping("/login")
     @Operation(summary="로그인 기능", description = "세션 기반 로그인 처리, 추후 JWT 변경 예정")
-    public ResponseEntity<Map<String,String>> login(@RequestBody UserLoginDTO loginDTO, HttpSession session){
+    public ResponseEntity<Map<String, Object>> login(@RequestBody UserLoginDTO loginDTO, HttpSession session){
 
         Boolean auth = userService.authenticateUser(loginDTO);
         User user = userService.getUserByEmail(loginDTO);
-        Map<String,String> response = new HashMap<>();
+        Map<String, Object> response = new HashMap<>();
 
         if(auth){
+            // 세션에 사용자 정보 저장
             session.setAttribute("userId", user.getId());
+
+            // UserResponseDTO 객체 생성
+            UserResponseDTO userResponseDTO = userService.userResponseDTO(user);
+
+            // 로그인 성공 시 성공 메시지와 사용자 정보 반환
             response.put("success", "login 성공");
-            return new ResponseEntity<>(response,HttpStatus.OK);
-        }else{
+            response.put("user", userResponseDTO);  // "user" 키로 사용자 정보 반환
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            // 로그인 실패 시 에러 메시지 반환
             response.put("error", "이메일 또는 비밀번호가 일치하지 않습니다.");
-            return new ResponseEntity<>(response,HttpStatus.OK);
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
     }
+
 
     //로그아웃
     @PostMapping("/logout")
@@ -60,6 +72,18 @@ public class UserController {
         Map<String, String> response = new HashMap<>();
         response.put("success", "logout 성공!");
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/duplicate")
+    ResponseEntity<Map<String,String>> duplicatedEmail(@RequestBody UserEmailDupDTO dto){
+        Map<String, String> response = new HashMap<>();
+
+        if(userService.isDuplicatedEmail(dto)){
+            response.put("message", "중복된 이메일이 존재합니다.");
+        }else{
+            response.put("message", "사용가능한 이매일입니다.");
+        }
+            return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }

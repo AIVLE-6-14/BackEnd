@@ -11,6 +11,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins("http://localhost:3000")  // 리액트 프론트엔드의 주소
                 .allowedMethods("GET", "POST", "DELETE", "PUT")
-                .allowedHeaders("*");
+                .allowedHeaders("*")
+                .allowCredentials(true);  // 쿠키와 인증 정보를 포함하여 요청을 보낼 수 있도록 허용
     }
 }
