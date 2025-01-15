@@ -11,4 +11,6 @@ public interface FollowUpRepository extends JpaRepository<FollowUp, Long> {
     List<FollowUp> findByOrganizationIdAndStatus(Long organizationId, Status status);
 
     List<FollowUp> findByStatus(Status status);
+
+    FollowUp findByAnimalId(Long animalId);
 }

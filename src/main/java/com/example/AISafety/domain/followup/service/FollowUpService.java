@@ -5,6 +5,7 @@ import com.example.AISafety.domain.followup.FollowUp;
 import com.example.AISafety.domain.followup.Status;
 import com.example.AISafety.domain.followup.repository.FollowUpRepository;
 import com.example.AISafety.domain.organization.service.OrganizationService;
+import com.example.AISafety.domain.user.User;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -51,5 +52,20 @@ public class FollowUpService {
 
     public List<FollowUp> findByStatus(Status status){
         return followUpRepository.findByStatus(status);
+    }
+
+    public FollowUp findByAnimalId(long  animalId){
+        return followUpRepository.findByAnimalId(animalId);
+    }
+
+    public FollowUp updateFollowUp(User user, Long animalId){
+        FollowUp follow = findByAnimalId(animalId);
+        follow.setStatus(Status.COMPLETED);
+        follow.setUser(user);
+        follow.setUpdatedAt(LocalDateTime.now());
+
+        followUpRepository.save(follow);
+
+        return follow;
     }
 }

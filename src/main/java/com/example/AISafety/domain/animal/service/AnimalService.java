@@ -35,15 +35,22 @@ public class AnimalService {
     }
 
     public List<AnimalResponseDTO> animalResponseDTOList(){
+        // PENDING 상태의 FollowUp에서 관련된 동물 ID 추출
         List<Long> animalIds = followUpService.findByStatus(Status.PENDING).stream()
                 .map(followUp -> followUp.getAnimal().getId())
                 .toList();
 
-        List<Animal>animals = animalRepository.findAll();
+        // COMPLETED 상태의 FollowUp에서 관련된 동물 ID 추출
+        List<Long> completedAnimalIds = followUpService.findByStatus(Status.COMPLETED).stream()
+                .map(followUp -> followUp.getAnimal().getId())
+                .toList();
+
+        // 모든 동물 목록 가져오기
+        List<Animal> animals = animalRepository.findAll();
 
         return animals.stream()
-                .filter(animal -> !animalIds.contains(animal.getId()))
-                .map(animal ->new AnimalResponseDTO(
+                .filter(animal -> !animalIds.contains(animal.getId()) && !completedAnimalIds.contains(animal.getId()))  // PENDING과 COMPLETED 제외
+                .map(animal -> new AnimalResponseDTO(
                         animal.getId(),
                         animal.getName(),
                         animal.getLatitude(),
@@ -54,11 +61,19 @@ public class AnimalService {
     }
 
     public List<AnimalResponseDTO> animalResponseDTOListByOrganization(Long id){
+        // 해당 기관의 PENDING 상태 FollowUp 목록
         List<FollowUp> followUps = followUpService.findByOrganizationIdAndStatus(id, Status.PENDING);
 
-        // followUps 에서 연관된 Animal 만 추출 한 것을 animalResponseDTO로 반환
-        List<AnimalResponseDTO> animalResponseDTOList = followUps.stream()
+        // PENDING 상태의 동물 ID 추출
+        List<Long> animalIds = followUps.stream()
+                .map(followUp -> followUp.getAnimal().getId())
+                .toList();
+
+        // 기관에 연관된 동물들만 추출하여 DTO로 변환
+
+        return followUps.stream()
                 .map(followUp -> followUp.getAnimal())
+                .filter(animal -> animalIds.contains(animal.getId()))  // PENDING 인것만
                 .map(animal -> new AnimalResponseDTO(
                         animal.getId(),
                         animal.getName(),
@@ -67,8 +82,6 @@ public class AnimalService {
                         animal.getDetectedAt()
                 ))
                 .collect(Collectors.toList());
-
-        return animalResponseDTOList;
 
     }
 
@@ -98,4 +111,5 @@ public class AnimalService {
         Animal animal = getAnimal(animalId);
         return followUpService.otherHandle(animal, organizationId);
     }
+
 }
