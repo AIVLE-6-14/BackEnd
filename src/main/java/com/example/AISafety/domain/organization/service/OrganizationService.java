@@ -2,6 +2,7 @@ package com.example.AISafety.domain.organization.service;
 
 import com.example.AISafety.domain.organization.Organization;
 import com.example.AISafety.domain.organization.dto.OrganizationDTO;
+import com.example.AISafety.domain.organization.dto.ResponseDTO;
 import com.example.AISafety.domain.organization.repository.OrganizationRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
@@ -26,5 +27,13 @@ public class OrganizationService {
     public Organization getOrganizationByID(Long id){
         return organizationRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("해당 id 를 가진 organization 은 존재하지 않습니다."));
+    }
+
+    public List<ResponseDTO>getOrganizationsName(){
+        return organizationRepository.findAll().stream()
+                .map(organization -> new ResponseDTO(
+                        organization.getName()
+                ))
+                .toList();
     }
 }
