@@ -1,6 +1,7 @@
 package com.example.AISafety.domain.organization.controller;
 
 import com.example.AISafety.domain.organization.dto.OrganizationDTO;
+import com.example.AISafety.domain.organization.dto.ResponseDTO;
 import com.example.AISafety.domain.organization.service.OrganizationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -10,6 +11,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,5 +30,11 @@ public class OrganizationController {
         Map<String,String> response = new HashMap<>();
         response.put("message", "organizations 저장 성공 !");
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<ResponseDTO>> oranizationsName(){
+        List<ResponseDTO> organizationsName = organizationService.getOrganizationsName();
+        return ResponseEntity.ok(organizationsName);
     }
 }
