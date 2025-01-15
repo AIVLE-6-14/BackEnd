@@ -82,6 +82,19 @@ public class PostService {
 
         return postResponseDTOs;
 
+    }
 
+    public PostResponseDTO getPostById(Long id){
+       Post post = postRepository.findById(id)
+               .orElseThrow(()->new RuntimeException("해당 ID의 게시물이 존재하지 않습니다."));
+
+       return new PostResponseDTO(
+               post.getId(),
+               post.getTitle(),
+               post.getContent(),
+               post.getCreatedAt(),
+               post.getUser().getId(),
+               post.getFollowup().getId()
+       );
     }
 }

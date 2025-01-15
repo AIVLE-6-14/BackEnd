@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,10 +59,17 @@ public class PostController {
 
         // 특정 기관의 포스트 조회
         @GetMapping("/organization")
-        @Operation(summary="게시물 기관 조회 기능", description = "해당 유저의 세션을 받아 해당 유저가 속한 기관의 게시물을 보여줍니다.")
+        @Operation(summary="게시물 기관 조회 기능", description = "해당 유저의 세션을 받아 해당 유저가 속한 기관 게시물을 보여줍니다.")
         public ResponseEntity<List<PostResponseDTO>> getPostsByOrganization(HttpSession session){
             List<PostResponseDTO> postsByOrganization = postService.getPostsByOrganization(session);
             return ResponseEntity.ok(postsByOrganization);
+        }
+
+        // 게시물 상세 조회
+        @GetMapping("/detail/{id}")
+        public ResponseEntity<PostResponseDTO> getPostById(@PathVariable("id") Long id){
+            PostResponseDTO postById = postService.getPostById(id);
+            return ResponseEntity.ok(postById);
         }
 
 
