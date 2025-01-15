@@ -30,6 +30,7 @@ public class Post {
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    // 이미지 추가 필요
     @ManyToOne
     @JoinColumn(name="user_id", nullable = false)
     private User user;
