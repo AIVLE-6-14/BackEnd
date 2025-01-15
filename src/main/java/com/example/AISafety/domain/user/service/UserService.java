@@ -3,7 +3,9 @@ package com.example.AISafety.domain.user.service;
 import com.example.AISafety.domain.organization.Organization;
 import com.example.AISafety.domain.organization.repository.OrganizationRepository;
 import com.example.AISafety.domain.user.User;
+import com.example.AISafety.domain.user.dto.UserEmailDupDTO;
 import com.example.AISafety.domain.user.dto.UserLoginDTO;
+import com.example.AISafety.domain.user.dto.UserResponseDTO;
 import com.example.AISafety.domain.user.dto.UserSignupDTO;
 import com.example.AISafety.domain.user.repository.UserRepository;
 import java.time.LocalDateTime;
@@ -54,4 +56,20 @@ public class UserService {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("해당 user를 찾을 수 없습니다."));
     }
+
+   public Boolean isDuplicatedEmail(UserEmailDupDTO dto){
+        return userRepository.existsByEmail(dto.getEmail());
+    }
+
+    public UserResponseDTO userResponseDTO(User user){
+        return new UserResponseDTO(
+                user.getName(),
+//                user.getEmail(),
+//                user.getPassWord(),
+//                user.getPhoneNumber(),
+                user.getRole(),
+                user.getOrganization().getName()
+        );
+    }
+
 }
