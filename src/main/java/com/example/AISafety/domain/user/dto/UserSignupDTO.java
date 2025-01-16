@@ -15,6 +15,5 @@ public class UserSignupDTO {
     private String email;
     private String passWord;
     private String number;
-    private RoleType role;
     private String organizationName;
 }
