@@ -13,5 +13,6 @@ public class AnimalResponseDTO {
     private final String name;
     private final double latitude;
     private final double longitude;
+    private final String imgUrl;
     private final LocalDateTime detectedAt;
 }

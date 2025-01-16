@@ -29,7 +29,7 @@ public class AnimalService {
             animal.setLongitude(animalDTO.getLongitude());
             animal.setLatitude(animalDTO.getLatitude());
             animal.setDetectedAt(LocalDateTime.now());
-
+            animal.setImgUrl(animalDTO.getImgUrl());
             animalRepository.save(animal);
         }
     }
@@ -55,6 +55,7 @@ public class AnimalService {
                         animal.getName(),
                         animal.getLatitude(),
                         animal.getLongitude(),
+                        animal.getImgUrl(),
                         animal.getDetectedAt()
                 ))
                 .collect(Collectors.toList());
@@ -79,6 +80,7 @@ public class AnimalService {
                         animal.getName(),
                         animal.getLatitude(),
                         animal.getLongitude(),
+                        animal.getImgUrl(),
                         animal.getDetectedAt()
                 ))
                 .collect(Collectors.toList());
