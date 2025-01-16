@@ -29,7 +29,8 @@ public class FollowUpService {
 
         followUpRepository.save(follow);
         Map<String, String> response = new HashMap<>();
-        response.put("success", "follow 저장 성공!");
+        response.put("SUCCESS", "등록 요청 성공");
+        response.put("message", "자체처리 기관에 요청 성공 하셨습니다.");
         return response;
     }
 
@@ -42,7 +43,8 @@ public class FollowUpService {
 
         followUpRepository.save(follow);
         Map<String, String> response = new HashMap<>();
-        response.put("success", "follow 저장 성공!");
+        response.put("SUCCESS", "등록 요청 성공");
+        response.put("message", "타 기관 처리 요청에 성공하셨습니다.");
         return response;
     }
 

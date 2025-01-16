@@ -16,16 +16,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String,String>> handleIllegalArgumentException(IllegalArgumentException ex){
         Map<String, String> response = new HashMap<>();
-        response.put("ERROR", "error");
-        response.put("Message", ex.getMessage());
+        response.put("FAIL", "error");
+        response.put("message", ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     //EntityNotFoundException 예외 처리
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<Map<String,String>> handleEntityNotFoundException(EntityNotFoundException ex){
         Map<String, String> response = new HashMap<>();
-        response.put("ERROR", "error");
-        response.put("Message", ex.getMessage());
+        response.put("FAIL", "error");
+        response.put("message", ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

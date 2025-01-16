@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,26 +31,33 @@ public class AnimalController {
     public ResponseEntity<Map<String, String>> saveAnimal(@RequestBody List<AnimalDTO> animalDTOList){
         animalService.save(animalDTOList);
         Map<String,String> response = new HashMap<>();
-        response.put("message", "성공적으로 동물감지 저장!");
+        response.put("SUCCESS", "동물 감지 저장 성공");
+        response.put("message", "동물 감지 저장에 성공하셨습니다.");
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     // 도로교통공사 모든 알림
     @GetMapping
     @Operation(summary="도로교통 공사 알림 조회 기능", description = "PENDING 처리가 되지 않은 모든 동물 감지 알림을 보여줍니다.")
-    public ResponseEntity<List<AnimalResponseDTO>> getAllAnimals(){
+    public ResponseEntity<Map<String, Object>> getAllAnimals(){
         List<AnimalResponseDTO> animalResponseDTOS = animalService.animalResponseDTOList();
-        return ResponseEntity.ok(animalResponseDTOS);
+        Map<String, Object> response = new HashMap<>();
+        response.put("SUCCESS", "알람 조회 성공");
+        response.put("message", animalResponseDTOS);
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
     //야생동물 보호 기관 해당하는 알림
     @GetMapping("/{organizationId}")
     @Operation(summary="야생동물 보호 기관 알림 조회 기능", description = "PENDING 처리가 된 동물 감지 알림을 보여줍니다. pathVariable로 해당 기관의 ID 가 필요합니다.")
-    public ResponseEntity<List<AnimalResponseDTO>> getAnimalsByOrganizationId(
+    public ResponseEntity<Map<String, Object>> getAnimalsByOrganizationId(
             @PathVariable("organizationId") Long organizationId){
         List<AnimalResponseDTO> animalResponseDTOS = animalService.animalResponseDTOListByOrganization(organizationId);
-        return  ResponseEntity.ok(animalResponseDTOS);
+        Map<String, Object> response = new HashMap<>();
+        response.put("SUCCESS", "알림 조회 성공");
+        response.put("message", animalResponseDTOS);
 
+        return  new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     //추후에 구현 방식을 바꿔야 할듯.. ?
@@ -57,7 +65,6 @@ public class AnimalController {
     @Operation(summary="알림 삭제 기능", description = "animal_id를 PathVariable로 받아 삭제합니다. - 오감지 시 사용")
     public ResponseEntity<Map<String, String>> deleteAnimal(@PathVariable("id") Long id){
         Map<String,String> response = animalService.deleteAnimal(id);
-
         return ResponseEntity.ok(response);
     }
 
