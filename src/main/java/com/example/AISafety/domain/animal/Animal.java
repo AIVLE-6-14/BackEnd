@@ -28,6 +28,8 @@ public class Animal {
     private double longitude;
     private LocalDateTime detectedAt;
 
+    private String imgUrl;
+
     @OneToMany(mappedBy = "animal")
     private List<FollowUp> followUps;
 
