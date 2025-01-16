@@ -13,6 +13,7 @@ import lombok.Setter;
 public class PostResponseDTO {
 
     private Long id;
+    private String organizationName;
     private String title;
     private String content;
     private LocalDateTime createdAt;

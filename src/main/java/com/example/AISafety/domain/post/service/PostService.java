@@ -49,6 +49,7 @@ public class PostService {
         return postRepository.findAll().stream()
                 .map(post -> new PostResponseDTO(
                         post.getId(),
+                        post.getFollowup().getOrganization().getName(),
                         post.getTitle(),
                         post.getContent(),
                         post.getCreatedAt(),
@@ -72,6 +73,7 @@ public class PostService {
                 .flatMap(followUp -> followUp.getPosts().stream()) // FollowUp에서 Post들의 리스트를 flatMap으로 평평하게 처리
                 .map(post -> new PostResponseDTO(
                         post.getId(),
+                        post.getFollowup().getOrganization().getName(),
                         post.getTitle(),
                         post.getContent(),
                         post.getCreatedAt(),
@@ -90,6 +92,7 @@ public class PostService {
 
        return new PostResponseDTO(
                post.getId(),
+               post.getFollowup().getOrganization().getName(),
                post.getTitle(),
                post.getContent(),
                post.getCreatedAt(),
