@@ -2,6 +2,7 @@ package com.example.AISafety.domain.user.service;
 
 import com.example.AISafety.domain.organization.Organization;
 import com.example.AISafety.domain.organization.repository.OrganizationRepository;
+import com.example.AISafety.domain.user.RoleType;
 import com.example.AISafety.domain.user.User;
 import com.example.AISafety.domain.user.dto.UserEmailDupDTO;
 import com.example.AISafety.domain.user.dto.UserLoginDTO;
@@ -25,12 +26,17 @@ public class UserService {
         }else{
             Organization organization = organizationRepository.findByName(userSignupDTO.getOrganizationName());
 
+            RoleType role = RoleType.SAFETY_USER;
+            if(organization.getName().equals("도로교통 공사")){
+                role = RoleType.ROAD_USER;
+            }
+
             User user = new User();
             user.setName(userSignupDTO.getName());
             user.setPhoneNumber(userSignupDTO.getNumber());
             user.setEmail(userSignupDTO.getEmail());
             user.setPassWord(userSignupDTO.getPassWord());
-            user.setRole(userSignupDTO.getRole());
+            user.setRole(role);
             user.setOrganization(organization);
             user.setCreatedAt(LocalDateTime.now());
 
