@@ -31,7 +31,8 @@ public class UserController {
     public ResponseEntity<Map<String, String>> signup(@RequestBody UserSignupDTO userSignupDTO){
         userService.userRegister(userSignupDTO);
         Map<String, String> response = new HashMap<>();
-        response.put("message", "회원가입이 성공적으로 완료!");
+        response.put("SUCCESS", "회원가입이 성공적으로 완료!");
+        response.put("message", "회원가입이 정상적으로 완료되었습니다.");
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -52,13 +53,14 @@ public class UserController {
             UserResponseDTO userResponseDTO = userService.userResponseDTO(user);
 
             // 로그인 성공 시 성공 메시지와 사용자 정보 반환
-            response.put("success", "login 성공");
-            response.put("user", userResponseDTO);  // "user" 키로 사용자 정보 반환
+            response.put("SUCCESS", "login 성공");
+            response.put("message", userResponseDTO);  // "user" 키로 사용자 정보 반환
 
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
             // 로그인 실패 시 에러 메시지 반환
-            response.put("error", "이메일 또는 비밀번호가 일치하지 않습니다.");
+            response.put("FAIL", "error");
+            response.put("message", "이메일 또는 비밀번호가 일치하지 않습니다.");
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
     }
@@ -70,7 +72,8 @@ public class UserController {
     ResponseEntity<Map<String,String>> logout(HttpSession session) {
         session.invalidate();
         Map<String, String> response = new HashMap<>();
-        response.put("success", "logout 성공!");
+        response.put("SUCCESS", "logout 성공!");
+        response.put("message", "logout 에 성공하셨습니다.");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -79,8 +82,10 @@ public class UserController {
         Map<String, String> response = new HashMap<>();
 
         if(userService.isDuplicatedEmail(dto)){
+            response.put("FAIL", "중복된 이메일 존재");
             response.put("message", "중복된 이메일이 존재합니다.");
         }else{
+            response.put("SUCCESS", "중복된 이메일 존재하지 않음");
             response.put("message", "사용가능한 이매일입니다.");
         }
             return new ResponseEntity<>(response, HttpStatus.OK);

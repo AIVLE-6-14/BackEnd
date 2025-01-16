@@ -88,12 +88,14 @@ public class AnimalService {
     public Map<String,String> deleteAnimal(Long id){
         Map<String, String> response =new HashMap<>();
         if(!animalRepository.existsById(id)){
-            response.put("error", "해당 animalID의 동물이 존재하지 않습니다.");
+            response.put("FAIL","삭제 실패");
+            response.put("message", "해당 animalID의 동물이 존재하지 않습니다.");
             return response;
         }
 
         animalRepository.deleteById(id);
-        response.put("success", "해당 id 값의 동물이 삭제되었습니다.");
+        response.put("SUCCESS", "삭제 성공");
+        response.put("message", "해당 id 값의 동물이 삭제되었습니다.");
         return response;
     }
 

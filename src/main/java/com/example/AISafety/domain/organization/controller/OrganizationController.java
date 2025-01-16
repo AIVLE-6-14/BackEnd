@@ -28,13 +28,17 @@ public class OrganizationController {
     public ResponseEntity<Map<String, String>> saveOrganization(@RequestBody List<OrganizationDTO> organizationDTOList){
         organizationService.saveOrganizations(organizationDTOList);
         Map<String,String> response = new HashMap<>();
-        response.put("message", "organizations 저장 성공 !");
+        response.put("SUCCESS", "organizations 저장 성공");
+        response.put("message", "organizations 저장에 성공하셨습니다.");
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping()
-    public ResponseEntity<List<ResponseDTO>> oranizationsName(){
+    public ResponseEntity<Map<String, Object>> oranizationsName(){
         List<ResponseDTO> organizationsName = organizationService.getOrganizationsName();
-        return ResponseEntity.ok(organizationsName);
+        Map<String, Object> response = new HashMap<>();
+        response.put("SUCCESS", "organizations 불러오기 성공");
+        response.put("message", organizationsName);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
