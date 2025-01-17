@@ -78,6 +78,7 @@ public class PostController {
 
         // 게시물 상세 조회
         @GetMapping("/detail/{id}")
+        @Operation(summary="특정 게시물 상세보기", description = "특정 게시물에 대한 상세 정보를 반환합니다.")
         public ResponseEntity<Map<String, Object>> getPostById(@PathVariable("id") Long id){
             PostResponseDTO postById = postService.getPostById(id);
             Map<String, Object> response = new HashMap<>();
