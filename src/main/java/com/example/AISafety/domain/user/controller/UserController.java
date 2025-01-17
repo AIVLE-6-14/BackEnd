@@ -48,14 +48,14 @@ public class UserController {
         if(auth){
             // 세션에 사용자 정보 저장
             session.setAttribute("userId", user.getId());
-
+            String sessionId = session.getId();
             // UserResponseDTO 객체 생성
             UserResponseDTO userResponseDTO = userService.userResponseDTO(user);
 
             // 로그인 성공 시 성공 메시지와 사용자 정보 반환
             response.put("SUCCESS", "login 성공");
             response.put("message", userResponseDTO);  // "user" 키로 사용자 정보 반환
-
+            response.put("sessionId", sessionId);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
             // 로그인 실패 시 에러 메시지 반환
