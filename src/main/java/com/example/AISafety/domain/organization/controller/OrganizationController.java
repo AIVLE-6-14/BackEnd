@@ -34,6 +34,7 @@ public class OrganizationController {
     }
 
     @GetMapping()
+    @Operation(summary="등록된 기관 이름 조회", description = "등록된 모든 기관들의 이름을 반환해줍니다.")
     public ResponseEntity<Map<String, Object>> oranizationsName(){
         List<ResponseDTO> organizationsName = organizationService.getOrganizationsName();
         Map<String, Object> response = new HashMap<>();

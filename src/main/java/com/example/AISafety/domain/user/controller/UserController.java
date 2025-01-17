@@ -78,6 +78,7 @@ public class UserController {
     }
 
     @PostMapping("/duplicate")
+    @Operation(summary="이메일 중복 확인", description = "해당 이메일이 중복 인지 아닌지 알려줍니다.")
     ResponseEntity<Map<String,String>> duplicatedEmail(@RequestBody UserEmailDupDTO dto){
         Map<String, String> response = new HashMap<>();
 
