@@ -4,8 +4,10 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -23,9 +25,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (token != null && jwtTokenProvider.validateToken(token)) {
             String userId = jwtTokenProvider.getUserId(token);  // 사용자 ID만 가져오기
+            String role = jwtTokenProvider.getRole(token);
+            var autholrities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role));
 
             // 사용자 ID만 포함한 인증 객체 생성
-            var authentication = new UsernamePasswordAuthenticationToken(userId, null, null);
+            var authentication = new UsernamePasswordAuthenticationToken(userId, null, autholrities);
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
             // SecurityContext에 설정

@@ -5,6 +5,7 @@ import com.example.AISafety.global.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -15,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(securedEnabled = true,prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -33,7 +35,15 @@ public class SecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 비활성화
                 .and()
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/","/api/users/login", "/api/users/signup","/api/users/logout","/api/animals/fetch","api/organizations/save","api/animals/1/self-handle").permitAll()
+                        .requestMatchers("/",
+                                "/api/users/login", // 로그인
+                                "/api/users/signup", //회원가입
+                                "/api/users/logout", //로그아웃
+                                "/api/animals/fetch", // 동물감지 등록
+                                "api/organizations/save", // 기관 등록
+                                "api/animals/1/self-handle", // 자체 처리 - 나중에 뺄 예정
+                                "api/organizations" // 기관 이름 조회
+                        ).permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers(
                                 "swagger-ui/**", //swagger UI 접근 허용
