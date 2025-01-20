@@ -1,5 +1,7 @@
 package com.example.AISafety.domain.post.controller;
 
+import static com.example.AISafety.global.security.jwt.JwtUtil.getCurrentUserId;
+
 import com.example.AISafety.domain.post.dto.PostRequestDTO;
 import com.example.AISafety.domain.post.dto.PostResponseDTO;
 import com.example.AISafety.domain.post.service.PostService;
@@ -28,28 +30,21 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping("/create")
-    @Operation(summary="게시물 생성 기능", description = "동물id, 제목, 내용, 유저 세션을 받아서 게시물을 생성합니다.")
-    public ResponseEntity<Map<String,String>> createPost(@RequestBody PostRequestDTO requestDTO, HttpSession session) {
-        Map<String, String> response = new HashMap<>();
+    @Operation(summary="게시물 생성 기능", description = "JWT 토큰에서 유저 정보를 가져와 게시물을 생성합니다.")
+    public ResponseEntity<Map<String,Object>> createPost(@RequestBody PostRequestDTO requestDTO) {
+        Map<String, Object> response = new HashMap<>();
 
-        Long userId = (Long) session.getAttribute("userId");
+        try{
+            Long userId = getCurrentUserId();
+            postService.createPost(requestDTO, userId);
+            response.put("SUCCESS", "게시글 등록 성공");
+            response.put("message", "게시글 등록에 성공하셨습니다.");
+            return new ResponseEntity<>(response, HttpStatus.OK);
 
-        if (userId == null) {
+        }catch (IllegalStateException ex){
             response.put("FAIL", "로그인 인증 실패");
             response.put("message", "로그인을 해주세요.");
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-
-        try {
-            postService.createPost(requestDTO, session);
-            response.put("SUCCESS", "게시글 등록 성공");
-            response.put("message", "새로운 게시글 등록에 성공하셨습니다.");
-            return new ResponseEntity<>(response, HttpStatus.OK);
-
-        } catch (Exception ex) {
-            response.put("FAIL", "예기치 못한 에러 발생");
-            response.put("message", ex.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -65,16 +60,16 @@ public class PostController {
         }
 
         // 특정 기관의 포스트 조회
-        @GetMapping("/organization")
-        @Operation(summary="게시물 기관 조회 기능", description = "해당 유저의 세션을 받아 해당 유저가 속한 기관 게시물을 보여줍니다.")
-        public ResponseEntity<Map<String,Object>> getPostsByOrganization(HttpSession session){
-            List<PostResponseDTO> postsByOrganization = postService.getPostsByOrganization(session);
-            Map<String,Object> response = new HashMap<>();
-            response.put("SUCCESS", "특정 기관의 게시물 조회 성공");
-            response.put("message", postsByOrganization);
-
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
+//        @GetMapping("/organization")
+//        @Operation(summary="게시물 기관 조회 기능", description = "해당 유저의 세션을 받아 해당 유저가 속한 기관 게시물을 보여줍니다.")
+//        public ResponseEntity<Map<String,Object>> getPostsByOrganization(HttpSession session){
+//            List<PostResponseDTO> postsByOrganization = postService.getPostsByOrganization(session);
+//            Map<String,Object> response = new HashMap<>();
+//            response.put("SUCCESS", "특정 기관의 게시물 조회 성공");
+//            response.put("message", postsByOrganization);
+//
+//            return new ResponseEntity<>(response, HttpStatus.OK);
+//        }
 
         // 게시물 상세 조회
         @GetMapping("/detail/{id}")

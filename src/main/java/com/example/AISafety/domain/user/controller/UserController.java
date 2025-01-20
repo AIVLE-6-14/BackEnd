@@ -1,6 +1,6 @@
 package com.example.AISafety.domain.user.controller;
 
-import com.example.AISafety.config.JwtTokenProvider;
+import com.example.AISafety.global.security.jwt.JwtTokenProvider;
 import com.example.AISafety.domain.user.dto.UserEmailDupDTO;
 import com.example.AISafety.domain.user.dto.UserLoginDTO;
 import com.example.AISafety.domain.user.dto.UserSignupDTO;
@@ -8,7 +8,6 @@ import com.example.AISafety.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -42,10 +41,10 @@ public class UserController {
     // 로그인 기능 (JWT 방식)
     @PostMapping("/login")
     @Operation(summary = "로그인 기능", description = "토큰 로그인 처리, JWT")
-    public ResponseEntity<Map<String, String>> login(@RequestBody UserLoginDTO loginDTO) {
-        boolean isValidUser = userService.authenticateUser(loginDTO);  // 사용자 인증
+    public ResponseEntity<Map<String, String>> login(@RequestBody UserLoginDTO loginDTO) {// 사용자 인증
+        boolean isSuccess = userService.checkUser(loginDTO);
         Map<String, String> response = new HashMap<>();
-        if (isValidUser) {
+        if ( isSuccess ) {
             // 사용자 정보 가져오기
             var user = userService.getUserByEmail(loginDTO);
 

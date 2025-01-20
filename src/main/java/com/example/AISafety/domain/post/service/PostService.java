@@ -10,7 +10,6 @@ import com.example.AISafety.domain.post.dto.PostResponseDTO;
 import com.example.AISafety.domain.post.repository.PostRepository;
 import com.example.AISafety.domain.user.User;
 import com.example.AISafety.domain.user.service.UserService;
-import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,9 +26,8 @@ public class PostService {
     private final OrganizationService organizationService;
 
     @Transactional
-    public void createPost(PostRequestDTO postRequestDTO, HttpSession session){
+    public void createPost(PostRequestDTO postRequestDTO, Long userId ){
         Long animalId = postRequestDTO.getAnimalId();
-        Long userId = (Long) session.getAttribute("userId");
         User user = userService.getUserById(userId);
 
         //followup 갱신
@@ -59,8 +57,7 @@ public class PostService {
                 .toList();
     }
 
-    public List<PostResponseDTO>getPostsByOrganization(HttpSession session){
-        Long userId = (Long) session.getAttribute("userId");
+    public List<PostResponseDTO>getPostsByOrganization(Long userId){
 
         User user = userService.getUserById(userId);
         Long organizationId = user.getOrganization().getId();
