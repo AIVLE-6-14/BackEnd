@@ -1,4 +1,4 @@
-package com.example.AISafety.config;
+package com.example.AISafety.global.security.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

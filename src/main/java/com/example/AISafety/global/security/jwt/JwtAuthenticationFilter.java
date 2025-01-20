@@ -1,38 +1,34 @@
-package com.example.AISafety.config;
+package com.example.AISafety.global.security.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
-
-    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider) {
-        this.jwtTokenProvider = jwtTokenProvider;
-    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         String token = resolveToken(request);
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-            String email = jwtTokenProvider.getEmail(token);
-            String userId = jwtTokenProvider.getUserId(token);
-            Long organizationId = jwtTokenProvider.getOrganizationId(token);
-            String name = jwtTokenProvider.getName(token);
 
-            var authentication = new UsernamePasswordAuthenticationToken(email, null, null);
+        if (token != null && jwtTokenProvider.validateToken(token)) {
+            String userId = jwtTokenProvider.getUserId(token);  // 사용자 ID만 가져오기
+
+            // 사용자 ID만 포함한 인증 객체 생성
+            var authentication = new UsernamePasswordAuthenticationToken(userId, null, null);
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-            // 여기서 인증 정보를 설정할 때 사용자 ID, 조직 ID, 이름 등을 추가로 설정할 수 있습니다.
+            // SecurityContext에 설정
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         chain.doFilter(request, response);
