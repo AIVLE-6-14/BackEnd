@@ -1,5 +1,6 @@
 package com.example.AISafety.domain.organization.controller;
 
+import com.example.AISafety.domain.organization.Organization;
 import com.example.AISafety.domain.organization.dto.OrganizationDTO;
 import com.example.AISafety.domain.organization.dto.ResponseDTO;
 import com.example.AISafety.domain.organization.service.OrganizationService;
@@ -11,11 +12,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,6 +37,16 @@ public class OrganizationController {
         Map<String, Object> response = new HashMap<>();
         response.put("SUCCESS", "organizations 불러오기 성공");
         response.put("message", organizationsName);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/{organizationId}")
+    @Operation(summary="단건 등록된 기관 이름 조회", description = "해당된 아이디의 기관의 이름을 반환해줍니다.")
+    public ResponseEntity<Map<String, Object>> getOrganizationById(@PathVariable Long organizationId) {
+        Organization organization = organizationService.getOrganizationByID(organizationId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("SUCCESS", "소속 이름 조회 성공");
+        response.put("message", organization.getName());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
