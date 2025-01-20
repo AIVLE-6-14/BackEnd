@@ -7,13 +7,13 @@ import com.example.AISafety.domain.post.dto.PostResponseDTO;
 import com.example.AISafety.domain.post.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,6 +50,7 @@ public class PostController {
 
         // 모든 포스트 조회
         @GetMapping("/all")
+        @PreAuthorize("hasRole('ROLE_ROAD_USER')")
         @Operation(summary="게시물 전체 조회 기능", description = "모든 게시물을 보여줍니다.")
         public ResponseEntity<Map<String, Object>> getAllPosts(){
             List<PostResponseDTO> allPosts = postService.getAllPosts();
@@ -59,20 +60,23 @@ public class PostController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
-        // 특정 기관의 포스트 조회
-//        @GetMapping("/organization")
-//        @Operation(summary="게시물 기관 조회 기능", description = "해당 유저의 세션을 받아 해당 유저가 속한 기관 게시물을 보여줍니다.")
-//        public ResponseEntity<Map<String,Object>> getPostsByOrganization(HttpSession session){
-//            List<PostResponseDTO> postsByOrganization = postService.getPostsByOrganization(session);
-//            Map<String,Object> response = new HashMap<>();
-//            response.put("SUCCESS", "특정 기관의 게시물 조회 성공");
-//            response.put("message", postsByOrganization);
-//
-//            return new ResponseEntity<>(response, HttpStatus.OK);
-//        }
+//         특정 기관의 포스트 조회
+        @GetMapping("/organization")
+        @PreAuthorize("hasRole('ROLE_SAFETY_USER')")
+        @Operation(summary="게시물 기관 조회 기능", description = "해당 유저의 세션을 받아 해당 유저가 속한 기관 게시물을 보여줍니다.")
+        public ResponseEntity<Map<String,Object>> getPostsByOrganization(){
+            Long id = getCurrentUserId();
+            List<PostResponseDTO> postsByOrganization = postService.getPostsByOrganization(id);
+            Map<String,Object> response = new HashMap<>();
+            response.put("SUCCESS", "특정 기관의 게시물 조회 성공");
+            response.put("message", postsByOrganization);
+
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
 
         // 게시물 상세 조회
         @GetMapping("/detail/{id}")
+        @PreAuthorize("hasAnyRole('ROLE_ROAD_USER', 'ROLE_SAFETY_USER')")
         @Operation(summary="특정 게시물 상세보기", description = "특정 게시물에 대한 상세 정보를 반환합니다.")
         public ResponseEntity<Map<String, Object>> getPostById(@PathVariable("id") Long id){
             PostResponseDTO postById = postService.getPostById(id);
