@@ -96,32 +96,4 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    /*
-    // 기존의 세션 기반 로그인 구현 (주석 처리)
-    @PostMapping("/login")
-    @Operation(summary="로그인 기능", description = "세션 기반 로그인 처리")
-    public ResponseEntity<Map<String, String>> login(HttpSession session, @RequestBody UserLoginDTO loginDTO) {
-        boolean isValidUser = userService.authenticateUser(loginDTO);
-        Map<String, String> response = new HashMap<>();
-        if (isValidUser) {
-            session.setAttribute("userId", loginDTO.getEmail()); // 세션에 사용자 이메일 저장
-            response.put("message", "로그인 성공");
-            return ResponseEntity.ok(response);
-        } else {
-            response.put("message", "로그인 실패: 이메일 또는 비밀번호가 잘못되었습니다.");
-            return ResponseEntity.status(401).body(response);
-        }
-    }
-
-    // 기존의 세션 기반 로그아웃 처리 (주석 처리)
-    @PostMapping("/logout")
-    @Operation(summary="로그아웃 기능", description = "세션 기반 로그아웃 처리")
-    ResponseEntity<Map<String,String>> logout(HttpSession session) {
-        session.invalidate(); // 세션 무효화
-        Map<String, String> response = new HashMap<>();
-        response.put("SUCCESS", "logout 성공!");
-        response.put("message", "logout 에 성공하셨습니다.");
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-    */
 }

@@ -38,11 +38,11 @@ public class SecurityConfig {
                         .requestMatchers("/",
                                 "/api/users/login", // 로그인
                                 "/api/users/signup", //회원가입
+                                "/api/users/duplicate", // 이메일 중복 체크
                                 "/api/users/logout", //로그아웃
                                 "/api/animals/fetch", // 동물감지 등록
-                                "api/organizations/save", // 기관 등록
-                                "api/animals/1/self-handle", // 자체 처리 - 나중에 뺄 예정
-                                "api/organizations" // 기관 이름 조회
+                                "/api/organizations/save", // 기관 등록
+                                "/api/organizations" // 기관 이름 조회
                         ).permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers(
