@@ -30,6 +30,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
+                .cors()
+                .and()
                 .headers().frameOptions().disable()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 비활성화
@@ -41,8 +43,7 @@ public class SecurityConfig {
                                 "/api/users/duplicate", // 이메일 중복 체크
                                 "/api/users/logout", //로그아웃
                                 "/api/animals/fetch", // 동물감지 등록
-                                "/api/organizations/save", // 기관 등록
-                                "/api/organizations" // 기관 이름 조회
+                                "/api/organizations/**" // 기관 등록
                         ).permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers(

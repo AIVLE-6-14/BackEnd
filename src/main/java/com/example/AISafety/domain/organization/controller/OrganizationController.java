@@ -42,7 +42,7 @@ public class OrganizationController {
 
     @GetMapping("/{organizationId}")
     @Operation(summary="단건 등록된 기관 이름 조회", description = "해당된 아이디의 기관의 이름을 반환해줍니다.")
-    public ResponseEntity<Map<String, Object>> getOrganizationById(@PathVariable Long organizationId) {
+    public ResponseEntity<Map<String, Object>> getOrganizationById(@PathVariable("organizationId") Long organizationId) {
         Organization organization = organizationService.getOrganizationByID(organizationId);
         Map<String, Object> response = new HashMap<>();
         response.put("SUCCESS", "소속 이름 조회 성공");
