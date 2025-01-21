@@ -35,6 +35,9 @@ public class Organization {
     private String number;
     private String address;
 
+    private double latitude;
+    private double longitude;
+
     // user와의 관계 (1:N)
     @OneToMany(mappedBy = "organization")
     private List<User> users;

@@ -1,9 +1,11 @@
 package com.example.AISafety.domain.followup.service;
 
 import com.example.AISafety.domain.animal.Animal;
+import com.example.AISafety.domain.animal.dto.OtherHandleDTO;
 import com.example.AISafety.domain.followup.FollowUp;
 import com.example.AISafety.domain.followup.Status;
 import com.example.AISafety.domain.followup.repository.FollowUpRepository;
+import com.example.AISafety.domain.organization.Organization;
 import com.example.AISafety.domain.organization.service.OrganizationService;
 import com.example.AISafety.domain.user.User;
 import java.time.LocalDateTime;
@@ -34,17 +36,22 @@ public class FollowUpService {
         return response;
     }
 
-    public Map<String, String> otherHandle(Animal animal, Long organizationId){
+    public Map<String, String> otherHandle(Animal animal, OtherHandleDTO otherHandleDTO){
+
+        Long organizationId = organizationService.findNearOrganizationId(
+                otherHandleDTO.getLatitude(), otherHandleDTO.getLongitude());
+
         FollowUp follow = new FollowUp();
         follow.setAnimal(animal);
         follow.setOrganization(organizationService.getOrganizationByID(organizationId));
         follow.setStatus(Status.PENDING);
         follow.setCreatedAt(LocalDateTime.now());
 
+
         followUpRepository.save(follow);
         Map<String, String> response = new HashMap<>();
         response.put("SUCCESS", "등록 요청 성공");
-        response.put("message", "타 기관 처리 요청에 성공하셨습니다.");
+        response.put("message", String.valueOf(organizationId));
         return response;
     }
 

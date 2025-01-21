@@ -2,6 +2,7 @@ package com.example.AISafety.domain.animal.controller;
 
 import com.example.AISafety.domain.animal.dto.AnimalDTO;
 import com.example.AISafety.domain.animal.dto.AnimalResponseDTO;
+import com.example.AISafety.domain.animal.dto.OtherHandleDTO;
 import com.example.AISafety.domain.animal.service.AnimalService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -83,13 +84,14 @@ public class AnimalController {
     }
 
     //animal 야생동물보호 처리 요청 컨트롤러
-    @PostMapping("/{animalId}/{organizationId}/other-handle")
+    @PostMapping("/{animalId}/other-handle")
     @PreAuthorize("hasRole('ROLE_ROAD_USER')")
     @Operation(summary="야생동물 보호기관 처리 요청 기능", description = "animal_id와 organization_id를 PathVariable로 받아 해당 동물감지에 대한 자체 처리 요청 을 수행합니다.(테이블 생성)")
     public ResponseEntity<Map<String, String>> handleOther(
             @PathVariable("animalId") Long animalId,
-            @PathVariable("organizationId") Long organizationId){
-        Map<String, String> response = animalService.otherHandle(animalId,organizationId);
+            @RequestBody OtherHandleDTO otherHandleDTO
+           ){
+        Map<String, String> response = animalService.otherHandle(animalId,otherHandleDTO);
         return ResponseEntity.ok(response);
     }
 

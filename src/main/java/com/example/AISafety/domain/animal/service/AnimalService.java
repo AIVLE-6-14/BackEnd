@@ -3,6 +3,7 @@ package com.example.AISafety.domain.animal.service;
 import com.example.AISafety.domain.animal.Animal;
 import com.example.AISafety.domain.animal.dto.AnimalDTO;
 import com.example.AISafety.domain.animal.dto.AnimalResponseDTO;
+import com.example.AISafety.domain.animal.dto.OtherHandleDTO;
 import com.example.AISafety.domain.animal.repository.AnimalRepository;
 import com.example.AISafety.domain.followup.FollowUp;
 import com.example.AISafety.domain.followup.Status;
@@ -111,9 +112,10 @@ public class AnimalService {
         return followUpService.selfHandle(animal);
     }
 
-    public Map<String, String> otherHandle(Long animalId, Long organizationId){
+    public Map<String, String> otherHandle(Long animalId, OtherHandleDTO otherHandleDTO){
         Animal animal = getAnimal(animalId);
-        return followUpService.otherHandle(animal, organizationId);
+
+        return followUpService.otherHandle(animal, otherHandleDTO);
     }
 
 }

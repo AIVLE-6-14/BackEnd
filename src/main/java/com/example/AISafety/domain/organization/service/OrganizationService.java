@@ -20,6 +20,8 @@ public class OrganizationService {
             organization.setName(organizationDTO.getName());
             organization.setNumber(organizationDTO.getNumber());
             organization.setAddress(organizationDTO.getAddress());
+            organization.setLatitude(organizationDTO.getLatitude());
+            organization.setLongitude(organizationDTO.getLongitude());
             organizationRepository.save(organization);
         }
     }
@@ -36,4 +38,49 @@ public class OrganizationService {
                 ))
                 .toList();
     }
+
+    public Long findNearOrganizationId(double latitude, double longitude){
+        List<Organization> organizationRepositoryAll = organizationRepository.findAll();
+        Organization near = null;
+        double shortestDistance = Double.MAX_VALUE;
+
+        for (Organization organization : organizationRepositoryAll) {
+            if(organization.getId() == 1) continue;
+            double distance = calculateDistance(latitude, longitude, organization.getLatitude(), organization.getLongitude());
+            if (distance < shortestDistance) {
+                shortestDistance = distance;
+                near = organization;
+            }
+        }
+
+        if (near != null) {
+            return near.getId();
+        } else {
+            throw new EntityNotFoundException("가장 가까운 조직을 찾을 수 없습니다.");
+        }
+
+    }
+
+
+    // 두 지점 간의 거리 계산 (하버사인 공식)
+    private double calculateDistance(double latitude1, double longitude1, double latitude2, double longitude2) {
+        final int R = 6371; // 지구 반지름 (단위: km)
+
+        double lat1 = Math.toRadians(latitude1);
+        double lon1 = Math.toRadians(longitude1);
+        double lat2 = Math.toRadians(latitude2);
+        double lon2 = Math.toRadians(longitude2);
+
+        double dLat = lat2 - lat1;
+        double dLon = lon2 - lon1;
+
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1) * Math.cos(lat2) *
+                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return R * c; // 결과는 킬로미터 단위
+    }
+
 }
