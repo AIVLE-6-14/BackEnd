@@ -6,7 +6,6 @@ import com.example.AISafety.domain.user.RoleType;
 import com.example.AISafety.domain.user.User;
 import com.example.AISafety.domain.user.dto.UserEmailDupDTO;
 import com.example.AISafety.domain.user.dto.UserLoginDTO;
-import com.example.AISafety.domain.user.dto.UserResponseDTO;
 import com.example.AISafety.domain.user.dto.UserSignupDTO;
 import com.example.AISafety.domain.user.repository.UserRepository;
 import java.time.LocalDateTime;

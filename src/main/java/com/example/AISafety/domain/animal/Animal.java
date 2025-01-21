@@ -1,6 +1,7 @@
 package com.example.AISafety.domain.animal;
 
 import com.example.AISafety.domain.followup.FollowUp;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,6 +29,7 @@ public class Animal {
     private double longitude;
     private LocalDateTime detectedAt;
 
+    @Column(columnDefinition = "TEXT")
     private String imgUrl;
 
     @OneToMany(mappedBy = "animal")
