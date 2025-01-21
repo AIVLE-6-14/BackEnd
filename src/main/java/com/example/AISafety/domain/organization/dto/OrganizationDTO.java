@@ -11,4 +11,6 @@ public class OrganizationDTO {
     private String name;
     private String number;
     private String address;
+    private double latitude;
+    private double longitude;
 }
