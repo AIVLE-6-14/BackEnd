@@ -12,4 +12,5 @@ public class PostRequestDTO {
     private Long animalId;
     private String title;
     private String content;
+    private String fileUrl; // 첨부파일 URL
 }

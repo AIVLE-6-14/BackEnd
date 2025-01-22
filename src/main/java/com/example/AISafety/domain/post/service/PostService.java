@@ -26,7 +26,7 @@ public class PostService {
     private final OrganizationService organizationService;
 
     @Transactional
-    public void createPost(PostRequestDTO postRequestDTO, Long userId ){
+    public Post createPost(PostRequestDTO postRequestDTO, Long userId ){
         Long animalId = postRequestDTO.getAnimalId();
         User user = userService.getUserById(userId);
 
@@ -36,11 +36,13 @@ public class PostService {
         Post post = new Post();
         post.setTitle(postRequestDTO.getTitle());
         post.setContent(postRequestDTO.getContent());
+        post.setFileUrl(postRequestDTO.getFileUrl()); // 파일 URL 설정
         post.setCreatedAt(LocalDateTime.now());
         post.setFollowup(followUp);
         post.setUser(user);
 
         postRepository.save(post);
+        return post;
     }
 
     public List<PostResponseDTO> getAllPosts(){
@@ -52,7 +54,8 @@ public class PostService {
                         post.getContent(),
                         post.getCreatedAt(),
                         post.getUser().getId(),
-                        post.getFollowup().getId()
+                        post.getFollowup().getId(),
+                        post.getFileUrl()
                 ))
                 .toList();
     }
@@ -75,7 +78,8 @@ public class PostService {
                         post.getContent(),
                         post.getCreatedAt(),
                         post.getUser().getId(), // User의 ID
-                        post.getFollowup().getId() // FollowUp의 ID
+                        post.getFollowup().getId(), // FollowUp의 ID
+                        post.getFileUrl()
                 ))
                 .toList();
 
@@ -94,7 +98,21 @@ public class PostService {
                post.getContent(),
                post.getCreatedAt(),
                post.getUser().getId(),
-               post.getFollowup().getId()
+               post.getFollowup().getId(),
+               post.getFileUrl()
        );
+    }
+    public void updatePost(Long postId, PostRequestDTO postRequestDTO) {
+        // 게시글을 ID로 찾기
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
+
+        // 게시글 정보 업데이트
+        post.setTitle(postRequestDTO.getTitle());
+        post.setContent(postRequestDTO.getContent());
+        post.setFileUrl(postRequestDTO.getFileUrl()); // 파일 URL 업데이트
+
+        // 게시글 저장
+        postRepository.save(post);  // 업데이트된 정보 저장
     }
 }

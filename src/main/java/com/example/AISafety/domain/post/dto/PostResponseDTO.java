@@ -19,4 +19,5 @@ public class PostResponseDTO {
     private LocalDateTime createdAt;
     private Long userId;
     private Long followupId;
+    private String fileUrl; // 첨부파일 URL
 }
