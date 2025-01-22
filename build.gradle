@@ -22,7 +22,7 @@ configurations {
 repositories {
 	mavenCentral()
 }
-//	runtimeOnly 'com.h2database:h2'
+
 dependencies {
 	// Spring Boot Starter
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -34,8 +34,8 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 
 	// MySQL
-	runtimeOnly 'com.mysql:mysql-connector-j'
-
+//	runtimeOnly 'com.mysql:mysql-connector-j'
+	runtimeOnly 'com.h2database:h2'
 	// Test Dependencies
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'

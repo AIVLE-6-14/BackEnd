@@ -4,16 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 import software.amazon.awssdk.core.sync.RequestBody;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -24,14 +20,14 @@ public class FileUploadService {
     @Value("${aws.s3.bucket}") // 버킷 이름 주입
     private String bucketName;
 
-    public String uploadFile(MultipartFile file, Long postId) throws IOException {
+    public String uploadFile(MultipartFile file, Long animalId) throws IOException {
         if (file == null || file.isEmpty()) {
             System.out.println("The file is empty or null.");
             return null;
         }
 
         // 파일명을 postId 기반으로 변경 (예: uploads/{postId}_image.jpg)
-        String fileName = "uploads/" + postId + "_" + file.getOriginalFilename();
+        String fileName = "uploads/" + animalId + "_" + file.getOriginalFilename();
         System.out.println("Uploading file to S3: " + fileName);
 
         // 파일 스트림 얻기
