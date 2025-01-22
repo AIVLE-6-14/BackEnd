@@ -3,7 +3,6 @@ package com.example.AISafety.domain.post.service;
 import com.example.AISafety.domain.followup.FollowUp;
 import com.example.AISafety.domain.followup.Status;
 import com.example.AISafety.domain.followup.service.FollowUpService;
-import com.example.AISafety.domain.organization.service.OrganizationService;
 import com.example.AISafety.domain.post.Post;
 import com.example.AISafety.domain.post.dto.PostRequestDTO;
 import com.example.AISafety.domain.post.dto.PostResponseDTO;
@@ -11,10 +10,12 @@ import com.example.AISafety.domain.post.repository.PostRepository;
 import com.example.AISafety.domain.user.User;
 import com.example.AISafety.domain.user.service.UserService;
 import jakarta.transaction.Transactional;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -23,26 +24,32 @@ public class PostService {
     private final PostRepository postRepository;
     private final FollowUpService followUpService;
     private final UserService userService;
-    private final OrganizationService organizationService;
+    private final FileUploadService fileUploadService;
 
     @Transactional
-    public Post createPost(PostRequestDTO postRequestDTO, Long userId ){
+    public void createPost(PostRequestDTO postRequestDTO, Long userId, MultipartFile file)
+            throws IOException {
         Long animalId = postRequestDTO.getAnimalId();
         User user = userService.getUserById(userId);
 
         //followup 갱신
         FollowUp followUp = followUpService.updateFollowUp(user,animalId);
 
+        String fileUrl = null;
+        if (file != null && !file.isEmpty()) {
+            // 파일 업로드 시 게시글 ID를 전달
+            fileUrl = fileUploadService.uploadFile(file, animalId);  // animalId
+        }
+
         Post post = new Post();
         post.setTitle(postRequestDTO.getTitle());
         post.setContent(postRequestDTO.getContent());
-        post.setFileUrl(postRequestDTO.getFileUrl()); // 파일 URL 설정
         post.setCreatedAt(LocalDateTime.now());
         post.setFollowup(followUp);
         post.setUser(user);
+        post.setFileUrl(fileUrl);
 
         postRepository.save(post);
-        return post;
     }
 
     public List<PostResponseDTO> getAllPosts(){
@@ -102,17 +109,5 @@ public class PostService {
                post.getFileUrl()
        );
     }
-    public void updatePost(Long postId, PostRequestDTO postRequestDTO) {
-        // 게시글을 ID로 찾기
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다."));
 
-        // 게시글 정보 업데이트
-        post.setTitle(postRequestDTO.getTitle());
-        post.setContent(postRequestDTO.getContent());
-        post.setFileUrl(postRequestDTO.getFileUrl()); // 파일 URL 업데이트
-
-        // 게시글 저장
-        postRepository.save(post);  // 업데이트된 정보 저장
-    }
 }

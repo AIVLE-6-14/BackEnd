@@ -2,12 +2,9 @@ package com.example.AISafety.domain.post.controller;
 
 import static com.example.AISafety.global.security.jwt.JwtUtil.getCurrentUserId;
 
-import com.example.AISafety.domain.post.Post;
 import com.example.AISafety.domain.post.dto.PostRequestDTO;
 import com.example.AISafety.domain.post.dto.PostResponseDTO;
-import com.example.AISafety.domain.post.service.FileUploadService;
 import com.example.AISafety.domain.post.service.PostService;
-import com.example.AISafety.global.security.jwt.JwtUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.HashMap;
@@ -26,41 +23,21 @@ import org.springframework.web.multipart.MultipartFile;
 @Tag(name="Post API", description = "게시물 관련 API 제공합니다.")
 public class PostController {
 
-    private final FileUploadService fileUploadService;
     private final PostService postService;
 
     @PostMapping("/create")
     @Operation(summary="게시물 생성 기능", description = "JWT 토큰에서 유저 정보를 가져와 게시물을 생성합니다.")
     public ResponseEntity<Map<String, Object>> createPost(
             @RequestParam(value = "file", required = false) MultipartFile file,  // 파일을 받을 때
-            @RequestParam("animalId") Long animalId,
-            @RequestParam("title") String title,
-            @RequestParam("content") String content
+            @ModelAttribute PostRequestDTO postRequestDTO
     ) {
         Map<String, Object> response = new HashMap<>();
+
         try {
-            // 게시글 생성
-            PostRequestDTO postRequestDTO = new PostRequestDTO();
-            postRequestDTO.setAnimalId(animalId);
-            postRequestDTO.setTitle(title);
-            postRequestDTO.setContent(content);
-
-            // 게시글 생성 후 postId를 받아옴
-            Post post = postService.createPost(postRequestDTO, getCurrentUserId());
-
-            String fileUrl = null;
-            if (file != null && !file.isEmpty()) {
-                // 파일 업로드 시 게시글 ID를 전달
-                fileUrl = fileUploadService.uploadFile(file, post.getId());  // 게시글 ID를 넘겨줌
-            }
-
-            postRequestDTO.setFileUrl(fileUrl);  // 파일 URL 설정
-
-            // 게시글 저장 (파일 URL을 포함하여 업데이트)
-            postService.updatePost(post.getId(), postRequestDTO);
-
+            Long userId = getCurrentUserId();
+            postService.createPost(postRequestDTO,userId, file);
             response.put("SUCCESS", "게시글 등록 성공");
-            response.put("fileUrl", fileUrl);  // 파일 URL이 포함된 응답 반환
+            response.put("fileUrl", "post 생성이 성공적으로 진행 되었습니다.");  // 파일 URL이 포함된 응답 반환
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             response.put("FAIL", "게시글 등록 실패");
