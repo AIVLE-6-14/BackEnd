@@ -3,19 +3,19 @@ package com.example.AISafety.domain.post.service;
 import com.example.AISafety.domain.followup.FollowUp;
 import com.example.AISafety.domain.followup.Status;
 import com.example.AISafety.domain.followup.service.FollowUpService;
-import com.example.AISafety.domain.organization.service.OrganizationService;
 import com.example.AISafety.domain.post.Post;
 import com.example.AISafety.domain.post.dto.PostRequestDTO;
 import com.example.AISafety.domain.post.dto.PostResponseDTO;
 import com.example.AISafety.domain.post.repository.PostRepository;
 import com.example.AISafety.domain.user.User;
 import com.example.AISafety.domain.user.service.UserService;
-import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -24,16 +24,22 @@ public class PostService {
     private final PostRepository postRepository;
     private final FollowUpService followUpService;
     private final UserService userService;
-    private final OrganizationService organizationService;
+    private final FileUploadService fileUploadService;
 
     @Transactional
-    public void createPost(PostRequestDTO postRequestDTO, HttpSession session){
+    public void createPost(PostRequestDTO postRequestDTO, Long userId, MultipartFile file)
+            throws IOException {
         Long animalId = postRequestDTO.getAnimalId();
-        Long userId = (Long) session.getAttribute("userId");
         User user = userService.getUserById(userId);
 
         //followup 갱신
         FollowUp followUp = followUpService.updateFollowUp(user,animalId);
+
+        String fileUrl = null;
+        if (file != null && !file.isEmpty()) {
+            // 파일 업로드 시 게시글 ID를 전달
+            fileUrl = fileUploadService.uploadFile(file, animalId);  // animalId
+        }
 
         Post post = new Post();
         post.setTitle(postRequestDTO.getTitle());
@@ -41,6 +47,7 @@ public class PostService {
         post.setCreatedAt(LocalDateTime.now());
         post.setFollowup(followUp);
         post.setUser(user);
+        post.setFileUrl(fileUrl);
 
         postRepository.save(post);
     }
@@ -54,13 +61,13 @@ public class PostService {
                         post.getContent(),
                         post.getCreatedAt(),
                         post.getUser().getId(),
-                        post.getFollowup().getId()
+                        post.getFollowup().getId(),
+                        post.getFileUrl()
                 ))
                 .toList();
     }
 
-    public List<PostResponseDTO>getPostsByOrganization(HttpSession session){
-        Long userId = (Long) session.getAttribute("userId");
+    public List<PostResponseDTO>getPostsByOrganization(Long userId){
 
         User user = userService.getUserById(userId);
         Long organizationId = user.getOrganization().getId();
@@ -78,7 +85,8 @@ public class PostService {
                         post.getContent(),
                         post.getCreatedAt(),
                         post.getUser().getId(), // User의 ID
-                        post.getFollowup().getId() // FollowUp의 ID
+                        post.getFollowup().getId(), // FollowUp의 ID
+                        post.getFileUrl()
                 ))
                 .toList();
 
@@ -97,7 +105,9 @@ public class PostService {
                post.getContent(),
                post.getCreatedAt(),
                post.getUser().getId(),
-               post.getFollowup().getId()
+               post.getFollowup().getId(),
+               post.getFileUrl()
        );
     }
+
 }

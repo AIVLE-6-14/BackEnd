@@ -1,14 +1,13 @@
 package com.example.AISafety.domain.user.controller;
 
-import com.example.AISafety.domain.user.User;
+import com.example.AISafety.global.security.jwt.JwtTokenProvider;
 import com.example.AISafety.domain.user.dto.UserEmailDupDTO;
 import com.example.AISafety.domain.user.dto.UserLoginDTO;
-import com.example.AISafety.domain.user.dto.UserResponseDTO;
 import com.example.AISafety.domain.user.dto.UserSignupDTO;
 import com.example.AISafety.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +25,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
+    private final JwtTokenProvider jwtTokenProvider;
+
+    // 회원가입 기능 (세션 방식 유지)
     @PostMapping("/signup")
-    @Operation(summary="회원가입 기능", description = "회원가입을 처리, 회원가입 전에는 Oranization 데이터가 존재해야합니다.")
+    @Operation(summary="회원가입 기능", description = "회원가입을 처리, 회원가입 전에는 Organization 데이터가 존재해야합니다.")
     public ResponseEntity<Map<String, String>> signup(@RequestBody UserSignupDTO userSignupDTO){
         userService.userRegister(userSignupDTO);
         Map<String, String> response = new HashMap<>();
@@ -36,45 +38,50 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    //세션 기반 로그인 구현, 추후 JWT로 변경 예정
+    // 로그인 기능 (JWT 방식)
     @PostMapping("/login")
-    @Operation(summary="로그인 기능", description = "세션 기반 로그인 처리, 추후 JWT 변경 예정")
-    public ResponseEntity<Map<String, Object>> login(@RequestBody UserLoginDTO loginDTO, HttpSession session){
 
-        Boolean auth = userService.authenticateUser(loginDTO);
-        User user = userService.getUserByEmail(loginDTO);
-        Map<String, Object> response = new HashMap<>();
+    @Operation(summary = "로그인 기능", description = "토큰 로그인 처리, JWT")
+    public ResponseEntity<Map<String, String>> login(@RequestBody UserLoginDTO loginDTO) {// 사용자 인증
+        boolean isSuccess = userService.checkUser(loginDTO);
+        Map<String, String> response = new HashMap<>();
+        if ( isSuccess ) {
+            // 사용자 정보 가져오기
+            var user = userService.getUserByEmail(loginDTO);
 
-        if(auth){
-            // 세션에 사용자 정보 저장
-            session.setAttribute("userId", user.getId());
-            // UserResponseDTO 객체 생성
-            UserResponseDTO userResponseDTO = userService.userResponseDTO(user);
+            // JWT 토큰 생성
+            String token = jwtTokenProvider.createToken(
+                    String.valueOf(user.getId()),  // 사용자 ID
+                    user.getEmail(),                // 사용자 이메일
+                    user.getRole().name(),          // 사용자 역할
+                    user.getOrganization().getId(), // 사용자 조직 ID
+                    user.getName()                  // 사용자 이름
+            );
 
-            // 로그인 성공 시 성공 메시지와 사용자 정보 반환
-            response.put("SUCCESS", "login 성공");
-            response.put("message", userResponseDTO);  // "user" 키로 사용자 정보 반환
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            // 응답으로 토큰과 메시지 전송
+            response.put("token", token);
+            response.put("message", "로그인 성공");
+            return ResponseEntity.ok(response);
         } else {
-            // 로그인 실패 시 에러 메시지 반환
-            response.put("FAIL", "error");
-            response.put("message", "이메일 또는 비밀번호가 일치하지 않습니다.");
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            // 인증 실패 시 메시지
+            response.put("message", "로그인 실패: 이메일 또는 비밀번호가 잘못되었습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
     }
 
-
-    //로그아웃
+    // 로그아웃 기능 (클라이언트에서 JWT 삭제)
     @PostMapping("/logout")
-    @Operation(summary="로그아웃 기능", description = "로그아웃을 처리.")
-    ResponseEntity<Map<String,String>> logout(HttpSession session) {
-        session.invalidate();
+    @Operation(summary = "로그아웃 기능", description = "JWT 토큰을 삭제하여 로그아웃을 처리합니다.")
+    public ResponseEntity<Map<String, String>> logout(HttpServletRequest request) {
         Map<String, String> response = new HashMap<>();
-        response.put("SUCCESS", "logout 성공!");
-        response.put("message", "logout 에 성공하셨습니다.");
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        // 클라이언트에서 JWT를 삭제하는 방식으로 로그아웃 처리
+        response.put("SUCCESS", "로그아웃 성공");
+        response.put("message", "JWT 토큰을 삭제하여 로그아웃 되었습니다.");
+
+        return ResponseEntity.ok(response);
     }
 
+    // 이메일 중복 확인 기능 (세션 방식 유지)
     @PostMapping("/duplicate")
     @Operation(summary="이메일 중복 확인", description = "해당 이메일이 중복 인지 아닌지 알려줍니다.")
     ResponseEntity<Map<String,String>> duplicatedEmail(@RequestBody UserEmailDupDTO dto){
@@ -85,9 +92,9 @@ public class UserController {
             response.put("message", "중복된 이메일이 존재합니다.");
         }else{
             response.put("SUCCESS", "중복된 이메일 존재하지 않음");
-            response.put("message", "사용가능한 이매일입니다.");
+            response.put("message", "사용가능한 이메일입니다.");
         }
-            return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }

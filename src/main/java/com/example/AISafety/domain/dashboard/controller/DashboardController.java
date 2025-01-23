@@ -11,6 +11,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +24,7 @@ import java.util.List;
 public class DashboardController {
 
     private final DashboardService dashboardService;
-
+    @PreAuthorize("hasAuthority('ROLE_ROAD_USER') or hasAuthority('ROLE_ADMIN')")
     @GetMapping("/bar")
     @Operation(summary="bar chart 에 필요한 데이터", description = "bar chart 에 필요한 데이터를 반환합니다.")
     public ResponseEntity<Map<String,Object>> getBarData() {
@@ -33,7 +34,7 @@ public class DashboardController {
         response.put("message", animalDistribution);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
+    @PreAuthorize("hasAuthority('ROLE_ROAD_USER') or hasAuthority('ROLE_ADMIN')")
     @GetMapping("/map-position")
     @Operation(summary="map-position 에 필요한 데이터", description = "animal position 데이터를 반환합니다.")
     public ResponseEntity<Map<String,Object>> getMapData(){
@@ -43,7 +44,7 @@ public class DashboardController {
         response.put("message", animalLangLong);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
+    @PreAuthorize("hasAuthority('ROLE_ROAD_USER') or hasAuthority('ROLE_ADMIN')")
     @GetMapping("/line")
     @Operation(summary="line chart 에 필요한 데이터", description = "line chart 에 필요한 데이터를 반환합니다.")
     public ResponseEntity<Map<String,Object>> getLineData(){
