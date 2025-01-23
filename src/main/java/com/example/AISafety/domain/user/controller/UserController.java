@@ -40,6 +40,7 @@ public class UserController {
 
     // 로그인 기능 (JWT 방식)
     @PostMapping("/login")
+
     @Operation(summary = "로그인 기능", description = "토큰 로그인 처리, JWT")
     public ResponseEntity<Map<String, String>> login(@RequestBody UserLoginDTO loginDTO) {// 사용자 인증
         boolean isSuccess = userService.checkUser(loginDTO);
