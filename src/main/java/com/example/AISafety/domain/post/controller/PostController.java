@@ -5,6 +5,7 @@ import static com.example.AISafety.global.security.jwt.JwtUtil.getCurrentUserId;
 import com.example.AISafety.domain.post.dto.PostRequestDTO;
 import com.example.AISafety.domain.post.dto.PostResponseDTO;
 import com.example.AISafety.domain.post.service.PostService;
+import com.example.AISafety.domain.predict.service.PredictService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class PostController {
 
     private final PostService postService;
+    private final PredictService predictService;
 
     @PostMapping("/create")
     @Operation(summary="게시물 생성 기능", description = "JWT 토큰에서 유저 정보를 가져와 게시물을 생성합니다.")
@@ -36,6 +38,7 @@ public class PostController {
         try {
             Long userId = getCurrentUserId();
             postService.createPost(postRequestDTO,userId, file);
+            predictService.savePredict(postRequestDTO.getAnimalId());
             response.put("SUCCESS", "게시글 등록 성공");
             response.put("fileUrl", "post 생성이 성공적으로 진행 되었습니다.");  // 파일 URL이 포함된 응답 반환
             return new ResponseEntity<>(response, HttpStatus.OK);
