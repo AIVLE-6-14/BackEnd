@@ -14,7 +14,7 @@ import lombok.Setter;
 public class PredictRiskResponseDTO {
     private double latitude;
     private double longitude;
-    private Integer roadkillRisk;  // 예측된 위험도 (1, 2, 3, 4)
+    private String roadkillRisk;  // 예측된 위험도 (1, 2, 3, 4)
     private Map<String, String> riskLevelProbabilities;  // 위험도별 확률 맵
 
 

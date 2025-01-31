@@ -23,7 +23,7 @@ public class Predict {
     private double latitude;
     private double longitude;
 
-    private Integer predictClass;
+    private String predictClass;
 
     @Embedded
     PredictPossibility predictPossibility;

@@ -28,35 +28,44 @@ public class PredictService {
     private final WebClient webClient;
 
     //추후에 yaml 로 뺄것
-    private String url = "http://localhost:3000/predict";
-    public void savePredict(Long animalId)
-    {
+    public void savePredict(Long animalId) {
         Animal animal = animalService.getAnimal(animalId);
         double latitude = animal.getLatitude();
         double longitude = animal.getLongitude();
 
-        // 추후에 YOLO 도 webClient 로 적용할 것
+        // WebClient로 데이터 요청
         Mono<PredictRiskRequestDTO> getPredict = webClient.get()
                 .uri(uriBuilder -> uriBuilder
-                        .path(url)
-                        .queryParam("lat",latitude)
-                        .queryParam("lon",longitude)
+                        .path("/predict")
+                        .queryParam("lat", latitude)
+                        .queryParam("lon", longitude)
                         .build())
                 .retrieve()
-                .bodyToMono(PredictRiskRequestDTO.class);
+                .bodyToMono(PredictRiskRequestDTO.class)
+                .onErrorResume(e -> {
+                    // 예외가 발생한 경우 처리할 코드
+                    return Mono.empty();  // 예외 발생 시 빈 Mono를 반환
+                });
 
-        getPredict.subscribe(predictRiskRequestDTO ->{
+        // 결과 처리
+        getPredict.subscribe(predictRiskRequestDTO -> {
+            // 예측 결과를 Predict 객체로 변환
             Predict predict = new Predict();
 
             predict.setLongitude(longitude);
             predict.setLatitude(latitude);
             predict.setPredictClass(predictRiskRequestDTO.getRoadkillRisk());
-            predict.setPredictPossibility(
-                    predictRiskRequestDTO.predictPossibilityDtoTo(predictRiskRequestDTO.getRiskLevelProbabilities()));
 
+            // PredictPossibility에 위험도 확률을 매핑
+            PredictPossibility possibility = predictRiskRequestDTO.predictPossibilityDtoTo(predictRiskRequestDTO.getRiskLevelProbabilities());
+            predict.setPredictPossibility(possibility);
+
+            // 예측 데이터를 DB에 저장
             predictRepository.save(predict);
+
         });
     }
+
 
     public void saveTest(PredictRiskRequestDTO predictRiskRequestDTO){
         Predict predict = new Predict();
