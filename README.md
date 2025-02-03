@@ -4,165 +4,195 @@
 
 이 프로젝트는 **AI 기반 동물 감지 시스템**과 관련된 다양한 기능을 제공합니다. 사용자는 동물 감지 정보를 등록하고, 도로 교통 공사 및 야생 동물 보호 기관에 관련 알림을 제공하는 등의 작업을 할 수 있습니다. 이 API는 **Spring Boot**로 구축되었으며, Swagger를 통해 API 문서를 자동으로 제공합니다.
 
+
 ## 목차
 
-- [API 소개](#api-소개)
-- [기능](#기능)
-  - [Animal API](#animal-api)
-  - [Dashboard API](#dashboard-api)
-  - [Map API](#map-api)
-  - [Organization API](#organization-api)
-  - [Post API](#post-api)
-  - [User API](#user-api)
-- [기타](#기타)
+- [인증](#인증)
+- [동물 API](#동물-api)
+  - [동물 감지 등록](#동물-감지-등록)
+  - [동물 알림 조회](#동물-알림-조회)
+  - [동물 처리](#동물-처리)
+- [대시보드 API](#대시보드-api)
+- [맵 API](#맵-api)
+- [기관 API](#기관-api)
+- [게시물 API](#게시물-api)
+- [예측 API](#예측-api)
+- [유저 API](#유저-api)
 
-## API 소개
+---
 
-이 프로젝트는 동물 감지와 관련된 알림 시스템을 포함하며, **도로교통 공사**, **야생 동물 보호 기관** 등의 역할을 맡은 사용자들이 알림을 조회하고 처리할 수 있도록 도와줍니다. 또한, **대시보드**를 통해 다양한 통계 및 정보를 시각적으로 제공하며, 사용자 인증 및 게시물 관리 기능도 포함되어 있습니다.
+## 인증
 
-## 기능
+모든 요청은 인증이 필요하며, `POST /api/users/signup`과 `POST /api/users/login`을 제외한 모든 요청은 JWT 토큰을 이용한 인증이 필요합니다.
 
-### Animal API
-동물 감지 및 알림을 관리하는 API입니다.
+- **로그인**: `POST /api/users/login`
+- **로그아웃**: `POST /api/users/logout`
 
-#### 1. 동물 감지 등록
-- **엔드포인트**: `/api/animals/fetch`
-- **HTTP 메서드**: `POST`
-- **설명**: 동물 감지 정보를 받아 저장합니다. 파이썬 서버에서 전송된 데이터를 처리하는 전용 API입니다.
-- **인증 필요 없음**
+---
 
-#### 2. 모든 동물 감지 알림 조회
-- **엔드포인트**: `/api/animals`
-- **HTTP 메서드**: `GET`
-- **설명**: 도로교통공사 관련 역할을 가진 사용자만 조회 가능. PENDING 상태가 아닌 모든 동물 감지 알림을 조회합니다.
-- **권한**: `ROLE_ROAD_USER`
+## 동물 API
 
-#### 3. 기관별 동물 감지 알림 조회
-- **엔드포인트**: `/api/animals/{organizationId}`
-- **HTTP 메서드**: `GET`
-- **설명**: 야생 동물 보호 기관 관련 알림을 조회합니다. 해당 기관 ID가 필요합니다.
-- **권한**: `ROLE_SAFETY_USER`
+### 동물 감지 등록
 
-#### 4. 동물 감지 알림 삭제
-- **엔드포인트**: `/api/animals/{id}`
-- **HTTP 메서드**: `DELETE`
-- **설명**: 동물 감지 알림을 삭제합니다.
-- **권한**: `ROLE_ROAD_USER`
+- **POST /api/animals/fetch**  
+  - **설명**: 동물 감지 데이터를 등록합니다.
+  - **요청 본문**: `AnimalDTO` 형식의 동물 감지 데이터 목록.
+  - **인증 필요 없음**.
 
-#### 5. 도로교통 공사의 자체 처리 요청
-- **엔드포인트**: `/api/animals/{id}/self-handle`
-- **HTTP 메서드**: `POST`
-- **설명**: 도로교통 공사에서 동물 감지에 대해 자체 처리 요청을 할 수 있습니다.
-- **권한**: `ROLE_ROAD_USER`
+### 동물 알림 조회
 
-#### 6. 야생동물 보호기관 처리 요청
-- **엔드포인트**: `/api/animals/{animalId}/other-handle`
-- **HTTP 메서드**: `POST`
-- **설명**: 야생 동물 보호 기관이 동물 감지에 대한 처리 요청을 할 수 있습니다.
-- **권한**: `ROLE_ROAD_USER`
+- **GET /api/animals**  
+  - **설명**: 모든 동물 알림을 조회합니다.
+  - **필요한 권한**: `ROLE_ROAD_USER`
+  
+- **GET /api/animals/{organizationId}**  
+  - **설명**: 특정 기관 ID에 해당하는 동물 알림을 조회합니다.
+  - **Path 변수**: `organizationId` (기관 ID).
+  - **필요한 권한**: `ROLE_SAFETY_USER`
 
-### Dashboard API
-대시보드를 위한 데이터 제공 API입니다.
+### 동물 처리
 
-#### 1. Bar Chart 데이터
-- **엔드포인트**: `/api/dashBoard/bar`
-- **HTTP 메서드**: `GET`
-- **설명**: Bar Chart에 필요한 데이터를 반환합니다.
-- **권한**: `ROLE_ROAD_USER`, `ROLE_ADMIN`
+- **DELETE /api/animals/{id}**  
+  - **설명**: 특정 동물 감지 알림을 삭제합니다.
+  - **Path 변수**: `id` (동물 감지 알림 ID).
+  - **필요한 권한**: `ROLE_ROAD_USER`
 
-#### 2. Map 데이터
-- **엔드포인트**: `/api/dashBoard/map-position`
-- **HTTP 메서드**: `GET`
-- **설명**: 동물 위치 데이터를 반환합니다.
-- **권한**: `ROLE_ROAD_USER`, `ROLE_ADMIN`
+- **POST /api/animals/{id}/self-handle**  
+  - **설명**: 도로 사용자에 의한 동물 감지 알림 자체 처리 요청을 수행합니다.
+  - **Path 변수**: `id` (동물 감지 알림 ID).
+  - **필요한 권한**: `ROLE_ROAD_USER`
 
-#### 3. Line Chart 데이터
-- **엔드포인트**: `/api/dashBoard/line`
-- **HTTP 메서드**: `GET`
-- **설명**: Line Chart에 필요한 데이터를 반환합니다.
-- **권한**: `ROLE_ROAD_USER`, `ROLE_ADMIN`
+- **POST /api/animals/{animalId}/other-handle**  
+  - **설명**: 야생동물 보호 기관에 의한 동물 감지 알림 처리 요청을 수행합니다.
+  - **Path 변수**: `animalId` (동물 감지 ID).
+  - **요청 본문**: `OtherHandleDTO` 형식의 처리 요청 데이터.
+  - **필요한 권한**: `ROLE_ROAD_USER`
 
-### Map API
-지도 관련 데이터를 제공합니다.
+---
 
-#### 1. CCTV 위치 조회
-- **엔드포인트**: `/api/map/cctv`
-- **HTTP 메서드**: `GET`
-- **설명**: CCTV 위치 데이터를 반환합니다.
-- **권한**: `ROLE_ROAD_USER`, `ROLE_SAFETY_USER`
+## 대시보드 API
 
-### Organization API
-기관 관련 API입니다.
+### 바 차트 데이터
 
-#### 1. 기관 등록
-- **엔드포인트**: `/api/organizations/save`
-- **HTTP 메서드**: `POST`
-- **설명**: 기관을 등록합니다.
-- **인증 필요 없음**
+- **GET /api/dashBoard/bar**  
+  - **설명**: 바 차트에 필요한 데이터를 반환합니다.
+  - **필요한 권한**: `ROLE_ROAD_USER` 또는 `ROLE_ADMIN`
 
-#### 2. 모든 기관 이름 조회
-- **엔드포인트**: `/api/organizations`
-- **HTTP 메서드**: `GET`
-- **설명**: 등록된 모든 기관들의 이름을 반환합니다.
+### 지도 위치 데이터
 
-#### 3. 특정 기관 이름 조회
-- **엔드포인트**: `/api/organizations/{organizationId}`
-- **HTTP 메서드**: `GET`
-- **설명**: 특정 기관의 이름을 조회합니다.
+- **GET /api/dashBoard/map-position**  
+  - **설명**: 동물 위치 데이터를 반환합니다.
+  - **필요한 권한**: `ROLE_ROAD_USER` 또는 `ROLE_ADMIN`
 
-### Post API
-게시물 관련 API입니다.
+### 라인 차트 데이터
 
-#### 1. 게시물 생성
-- **엔드포인트**: `/api/posts/create`
-- **HTTP 메서드**: `POST`
-- **설명**: 게시물을 생성합니다. 파일 첨부가 가능합니다.
-- **권한**: 로그인한 사용자
+- **GET /api/dashBoard/line**  
+  - **설명**: 라인 차트에 필요한 데이터를 반환합니다.
+  - **필요한 권한**: `ROLE_ROAD_USER` 또는 `ROLE_ADMIN`
 
-#### 2. 모든 게시물 조회
-- **엔드포인트**: `/api/posts/all`
-- **HTTP 메서드**: `GET`
-- **설명**: 모든 게시물을 조회합니다.
-- **권한**: `ROLE_ROAD_USER`
+---
 
-#### 3. 특정 기관 게시물 조회
-- **엔드포인트**: `/api/posts/organization`
-- **HTTP 메서드**: `GET`
-- **설명**: 해당 사용자가 속한 기관의 게시물을 조회합니다.
-- **권한**: `ROLE_SAFETY_USER`
+## 맵 API
 
-#### 4. 게시물 상세 조회
-- **엔드포인트**: `/api/posts/detail/{id}`
-- **HTTP 메서드**: `GET`
-- **설명**: 특정 게시물의 상세 정보를 조회합니다.
-- **권한**: `ROLE_ROAD_USER`, `ROLE_SAFETY_USER`
+### CCTV 데이터 조회
 
-### User API
-회원 관련 API입니다.
+- **GET /api/map/cctv**  
+  - **설명**: CCTV 위치, 이름, 영상 정보를 조회합니다.
+  - **필요한 권한**: `ROLE_ROAD_USER` 또는 `ROLE_SAFETY_USER`
 
-#### 1. 회원가입
-- **엔드포인트**: `/api/users/signup`
-- **HTTP 메서드**: `POST`
-- **설명**: 회원가입을 처리합니다. 회원가입 전에 기관 데이터가 존재해야 합니다.
+---
 
-#### 2. 로그인
-- **엔드포인트**: `/api/users/login`
-- **HTTP 메서드**: `POST`
-- **설명**: JWT 방식으로 로그인합니다.
+## 기관 API
 
-#### 3. 로그아웃
-- **엔드포인트**: `/api/users/logout`
-- **HTTP 메서드**: `POST`
-- **설명**: JWT 토큰을 삭제하여 로그아웃합니다.
+### 기관 등록
 
-#### 4. 이메일 중복 확인
-- **엔드포인트**: `/api/users/duplicate`
-- **HTTP 메서드**: `POST`
-- **설명**: 이메일 중복 여부를 확인합니다.
+- **POST /api/organizations/save**  
+  - **설명**: 기관을 리스트 형태로 등록합니다.
+  - **요청 본문**: `OrganizationDTO` 형식의 기관 목록.
 
-## 기타
+### 기관 이름 조회
 
-- 모든 API는 **JWT 인증**을 사용하며, 권한에 따라 특정 기능에 접근할 수 있습니다.
-- Swagger UI를 통해 API 문서를 자동으로 제공하므로, API를 쉽게 테스트하고 사용법을 확인할 수 있습니다.
+- **GET /api/organizations**  
+  - **설명**: 등록된 모든 기관의 이름을 조회합니다.
+  
+- **GET /api/organizations/{organizationId}**  
+  - **설명**: 특정 기관 ID에 해당하는 기관 이름을 조회합니다.
+  - **Path 변수**: `organizationId` (기관 ID).
 
+---
 
+## 게시물 API
+
+### 게시물 생성
+
+- **POST /api/posts/create**  
+  - **설명**: JWT 토큰에서 유저 정보를 가져와 게시물을 생성합니다.
+  - **요청 본문**: `PostRequestDTO` 형식의 게시물 데이터.
+  - **파일 업로드 가능**.
+
+### 모든 게시물 조회
+
+- **GET /api/posts/all**  
+  - **설명**: 모든 게시물을 조회합니다.
+  - **필요한 권한**: `ROLE_ROAD_USER`
+
+### 특정 기관의 게시물 조회
+
+- **GET /api/posts/organization**  
+  - **설명**: 현재 로그인한 유저의 기관에 해당하는 게시물을 조회합니다.
+  - **필요한 권한**: `ROLE_SAFETY_USER`
+
+### 게시물 상세 조회
+
+- **GET /api/posts/detail/{id}**  
+  - **설명**: 특정 게시물에 대한 상세 정보를 조회합니다.
+  - **Path 변수**: `id` (게시물 ID).
+  - **필요한 권한**: `ROLE_ROAD_USER` 또는 `ROLE_SAFETY_USER`
+
+---
+
+## 예측 API
+
+### 예측 결과 저장
+
+- **POST /predict**  
+  - **설명**: 예측 모델 결과값을 테이블에 저장합니다.
+  - **요청 본문**: `PredictRiskRequestDTO` 형식의 예측 요청 데이터.
+  - **필요한 권한**: `ROLE_ROAD_USER`
+
+### 예측 결과 조회
+
+- **GET /predict**  
+  - **설명**: 예측 모델이 판단한 도로의 위험도 리스트를 조회합니다.
+  - **필요한 권한**: `ROLE_ROAD_USER`
+
+---
+
+## 유저 API
+
+### 회원가입
+
+- **POST /api/users/signup**  
+  - **설명**: 새로운 유저를 회원가입합니다.
+  - **요청 본문**: `UserSignupDTO` 형식의 회원가입 데이터.
+
+### 로그인
+
+- **POST /api/users/login**  
+  - **설명**: JWT 토큰으로 로그인을 처리합니다.
+  - **요청 본문**: `UserLoginDTO` 형식의 로그인 데이터.
+
+### 로그아웃
+
+- **POST /api/users/logout**  
+  - **설명**: JWT 토큰을 삭제하여 로그아웃을 처리합니다.
+
+### 이메일 중복 확인
+
+- **POST /api/users/duplicate**  
+  - **설명**: 이메일 중복 여부를 확인합니다.
+  - **요청 본문**: `UserEmailDupDTO` 형식의 이메일 데이터.
+  
+---
+
+이 문서는 AISafety 프로젝트의 각 API에 대한 기본적인 설명을 제공합니다. 각 API는 다양한 기능을 제공하며, 일부 기능은 권한이 필요한 요청이므로 적절한 권한을 가진 사용자만 접근할 수 있습니다.
