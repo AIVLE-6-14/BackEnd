@@ -53,7 +53,7 @@ public class AnimalController {
 
     //야생동물 보호 기관 해당하는 알림
     @GetMapping("/{organizationId}")
-    @PreAuthorize("hasRole('ROLE_SAFETY_USER')")
+    @PreAuthorize("hasAuthority('ROLE_ROAD_USER') or hasAuthority('ROLE_SAFETY_USER')")
     @Operation(summary="야생동물 보호 기관 알림 조회 기능", description = "PENDING 처리가 된 동물 감지 알림을 보여줍니다. pathVariable로 해당 기관의 ID 가 필요합니다.")
     public ResponseEntity<Map<String, Object>> getAnimalsByOrganizationId(
             @PathVariable("organizationId") Long organizationId){

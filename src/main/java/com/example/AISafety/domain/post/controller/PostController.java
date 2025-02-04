@@ -2,6 +2,7 @@ package com.example.AISafety.domain.post.controller;
 
 import static com.example.AISafety.global.security.jwt.JwtUtil.getCurrentUserId;
 
+import com.example.AISafety.domain.post.dto.InfoResponseDTO;
 import com.example.AISafety.domain.post.dto.PostRequestDTO;
 import com.example.AISafety.domain.post.dto.PostResponseDTO;
 import com.example.AISafety.domain.post.service.PostService;
@@ -83,6 +84,18 @@ public class PostController {
             Map<String, Object> response = new HashMap<>();
             response.put("SUCCESS", "게시물 상세 조회 성공");
             response.put("message", postById);
+
+            return new ResponseEntity<>(response,HttpStatus.OK);
+        }
+
+        @GetMapping("/info/{animalId}")
+        @PreAuthorize("hasAnyRole('ROLE_ROAD_USER', 'ROLE_SAFETY_USER')")
+        public ResponseEntity<Map<String, Object>> getInfo(@PathVariable("animalId") Long animalId){
+            Long userId = getCurrentUserId();
+            InfoResponseDTO info = postService.getInfo(userId, animalId);
+            Map<String,Object> response = new HashMap<>();
+            response.put("SUCCESS", "기본 정보 조회 성공");
+            response.put("message", info);
 
             return new ResponseEntity<>(response,HttpStatus.OK);
         }

@@ -1,9 +1,13 @@
 package com.example.AISafety.domain.post.service;
 
+import com.example.AISafety.domain.animal.Animal;
+import com.example.AISafety.domain.animal.service.AnimalService;
 import com.example.AISafety.domain.followup.FollowUp;
 import com.example.AISafety.domain.followup.Status;
 import com.example.AISafety.domain.followup.service.FollowUpService;
+import com.example.AISafety.domain.organization.Organization;
 import com.example.AISafety.domain.post.Post;
+import com.example.AISafety.domain.post.dto.InfoResponseDTO;
 import com.example.AISafety.domain.post.dto.PostRequestDTO;
 import com.example.AISafety.domain.post.dto.PostResponseDTO;
 import com.example.AISafety.domain.post.repository.PostRepository;
@@ -24,6 +28,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final FollowUpService followUpService;
     private final UserService userService;
+    private final AnimalService animalService;
     private final FileUploadService fileUploadService;
 
     @Transactional
@@ -108,6 +113,20 @@ public class PostService {
                post.getFollowup().getId(),
                post.getFileUrl()
        );
+    }
+
+    public InfoResponseDTO getInfo(Long userId, Long animalId){
+        User user = userService.getUserById(userId);
+        Organization organization = user.getOrganization();
+        Animal animal = animalService.getAnimal(animalId);
+        return new InfoResponseDTO(
+                animal.getDetectedAt(),
+                animal.getLatitude(),
+                animal.getLongitude(),
+                organization.getName(),
+                animal.getName(),
+                user.getName()
+        );
     }
 
 }
