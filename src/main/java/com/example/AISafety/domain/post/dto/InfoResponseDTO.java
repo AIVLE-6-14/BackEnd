@@ -12,8 +12,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InfoResponseDTO {
+
     @JsonProperty("detected_time")
     private LocalDateTime detectedTime;
+
 
     private double latitude;
 
