@@ -13,6 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class InfoResponseDTO {
 <<<<<<< HEAD
+<<<<<<< HEAD
 
     @JsonProperty("detected_time")
     private LocalDateTime detectedTime;
@@ -21,6 +22,10 @@ public class InfoResponseDTO {
     @JsonProperty("incident_time")
     private LocalDateTime incidentTime;
 >>>>>>> f1d5c5b (fix : LLM 사용을 위해 기본 정보 넘겨주는 로직 작성)
+=======
+    @JsonProperty("detected_time")
+    private LocalDateTime detectedTime;
+>>>>>>> 140ef00 (fix : dto 변경)
 
     private double latitude;
 
