@@ -10,4 +10,5 @@ import lombok.Setter;
 @Setter
 public class ResponseDTO {
     private String name;
+    private Long id;
 }
