@@ -35,6 +35,22 @@ public class AnimalService {
         }
     }
 
+    public List<AnimalResponseDTO> allAnimalResponseDTOList(){
+        List<Animal> all = animalRepository.findAll();
+
+       return all.stream()
+               .map(animal -> new AnimalResponseDTO(
+                       animal.getId(),
+                       animal.getName(),
+                       animal.getLatitude(),
+                       animal.getLongitude(),
+                       animal.getImgUrl(),
+                       animal.getDetectedAt()
+               ))
+               .toList();
+
+    }
+
     public List<AnimalResponseDTO> animalResponseDTOList(){
         // PENDING 상태의 FollowUp에서 관련된 동물 ID 추출
         List<Long> animalIds = followUpService.findByStatus(Status.PENDING).stream()

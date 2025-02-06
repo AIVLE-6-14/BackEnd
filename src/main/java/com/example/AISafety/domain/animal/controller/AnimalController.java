@@ -40,13 +40,23 @@ public class AnimalController {
 
     // 도로교통공사 모든 알림
     // 도로 교통 공사  role 만 가능하게
-    @GetMapping
-    @PreAuthorize("hasRole('ROLE_ROAD_USER')")
+    @GetMapping("/alarm")
+    @PreAuthorize("hasAuthority('ROLE_ROAD_USER') or hasAuthority('ROLE_SAFETY_USER')")
     @Operation(summary="도로교통 공사 알림 조회 기능", description = "PENDING 처리가 되지 않은 모든 동물 감지 알림을 보여줍니다.")
-    public ResponseEntity<Map<String, Object>> getAllAnimals(){
+    public ResponseEntity<Map<String, Object>> getAlarmAnimals(){
         List<AnimalResponseDTO> animalResponseDTOS = animalService.animalResponseDTOList();
         Map<String, Object> response = new HashMap<>();
-        response.put("SUCCESS", "알람 조회 성공");
+        response.put("SUCCESS", "알람에 존재하는 동물 조회 성공");
+        response.put("message", animalResponseDTOS);
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('ROLE_ROAD_USER')")
+    @Operation(summary="도로교통 공사 알림 조회 기능", description = "PENDING 처리가 되지 않은 모든 동물 감지 알림을 보여줍니다.")
+    public ResponseEntity<Map<String, Object>> getAllmAnimals(){
+        List<AnimalResponseDTO> animalResponseDTOS = animalService.allAnimalResponseDTOList();
+        Map<String, Object> response = new HashMap<>();
+        response.put("SUCCESS", "모든 동물 조회 성공");
         response.put("message", animalResponseDTOS);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
