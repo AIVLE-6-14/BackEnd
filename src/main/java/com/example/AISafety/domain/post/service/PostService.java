@@ -16,6 +16,8 @@ import com.example.AISafety.domain.user.service.UserService;
 import jakarta.transaction.Transactional;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -49,7 +51,7 @@ public class PostService {
         Post post = new Post();
         post.setTitle(postRequestDTO.getTitle());
         post.setContent(postRequestDTO.getContent());
-        post.setCreatedAt(LocalDateTime.now());
+        post.setCreatedAt(ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime());
         post.setFollowup(followUp);
         post.setUser(user);
         post.setFileUrl(fileUrl);
