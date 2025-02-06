@@ -9,7 +9,8 @@ import com.example.AISafety.domain.followup.FollowUp;
 import com.example.AISafety.domain.followup.Status;
 import com.example.AISafety.domain.followup.service.FollowUpService;
 import jakarta.persistence.EntityNotFoundException;
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +30,7 @@ public class AnimalService {
             animal.setName(animalDTO.getName());
             animal.setLongitude(animalDTO.getLongitude());
             animal.setLatitude(animalDTO.getLatitude());
-            animal.setDetectedAt(LocalDateTime.now());
+            animal.setDetectedAt(ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toLocalDateTime());
             animal.setImgUrl(animalDTO.getImgUrl());
             animalRepository.save(animal);
         }
