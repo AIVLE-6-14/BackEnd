@@ -34,7 +34,8 @@ public class OrganizationService {
     public List<ResponseDTO>getOrganizationsName(){
         return organizationRepository.findAll().stream()
                 .map(organization -> new ResponseDTO(
-                        organization.getName()
+                        organization.getName(),
+                        organization.getId()
                 ))
                 .toList();
     }
