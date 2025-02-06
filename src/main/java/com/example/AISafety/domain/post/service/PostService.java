@@ -120,12 +120,12 @@ public class PostService {
         Organization organization = user.getOrganization();
         Animal animal = animalService.getAnimal(animalId);
         return new InfoResponseDTO(
-                animal.getDetectedAt(),
-                animal.getLatitude(),
+              animal.getLatitude(),
                 animal.getLongitude(),
                 organization.getName(),
-                animal.getName(),
-                user.getName()
+                user.getName(),
+                animal.getDetectedAt(),
+                animal.getName()
         );
     }
 
