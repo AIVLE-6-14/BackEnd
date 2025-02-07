@@ -35,7 +35,7 @@ public class PredictController {
     }
 
     @GetMapping()
-    @PreAuthorize("hasRole('ROLE_ROAD_USER') or hasRole('ROLE_SAFETY')")
+    @PreAuthorize("hasRole('ROLE_ROAD_USER') or hasRole('ROLE_SAFETY_USER')")
     @Operation(summary="예축 모델 결과 조회", description = "예측 모델이 판단한 도로의 위험도 리스트를 조회 할 수 있습니다.")
     public ResponseEntity<Map<String,Object>> getPredicts(){
        Map<String, Object> response = new HashMap<>();
