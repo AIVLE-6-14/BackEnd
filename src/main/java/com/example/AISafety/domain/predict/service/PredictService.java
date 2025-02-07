@@ -3,19 +3,12 @@ package com.example.AISafety.domain.predict.service;
 import com.example.AISafety.domain.animal.Animal;
 import com.example.AISafety.domain.animal.service.AnimalService;
 import com.example.AISafety.domain.predict.Predict;
-import com.example.AISafety.domain.predict.PredictPossibility;
 import com.example.AISafety.domain.predict.dto.PredictRiskRequestDTO;
 import com.example.AISafety.domain.predict.dto.PredictRiskResponseDTO;
 import com.example.AISafety.domain.predict.repository.PredictRepository;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -54,11 +47,9 @@ public class PredictService {
 
             predict.setLongitude(longitude);
             predict.setLatitude(latitude);
-            predict.setPredictClass(predictRiskRequestDTO.getRoadkillRisk());
-
+            predict.setPredictCnt(predictRiskRequestDTO.getPredictCnt());
+            predict.setDangerous(predictRiskRequestDTO.getDangerous());
             // PredictPossibility에 위험도 확률을 매핑
-            PredictPossibility possibility = predictRiskRequestDTO.predictPossibilityDtoTo(predictRiskRequestDTO.getRiskLevelProbabilities());
-            predict.setPredictPossibility(possibility);
 
             // 예측 데이터를 DB에 저장
             predictRepository.save(predict);
@@ -70,11 +61,12 @@ public class PredictService {
     public void saveTest(PredictRiskRequestDTO predictRiskRequestDTO){
         Predict predict = new Predict();
 
-        predict.setLatitude(predictRiskRequestDTO.getLatitude());
-        predict.setLongitude(predictRiskRequestDTO.getLongitude());
-        predict.setPredictClass(predictRiskRequestDTO.getRoadkillRisk());
-        predict.setPredictPossibility(
-                predictRiskRequestDTO.predictPossibilityDtoTo(predictRiskRequestDTO.getRiskLevelProbabilities()));
+        //테스트 임으로 static 하게
+        predict.setLatitude(36.4);
+        predict.setLongitude(126.7);
+        predict.setPredictCnt(predictRiskRequestDTO.getPredictCnt());
+        predict.setDangerous(predictRiskRequestDTO.getDangerous());
+
         predictRepository.save(predict);
     }
 
@@ -84,22 +76,15 @@ public class PredictService {
         return predictList.stream()
                 .map(predict -> {
                     // PredictPossibility 객체 가져오기
-                    PredictPossibility predictPossibility = predict.getPredictPossibility();
 
                     // riskLevelProbabilities 맵 생성
-                    Map<String, String> riskLevelProbabilities = Map.of(
-                            "Risk Level 1", Optional.ofNullable(predictPossibility.getRisk1()).orElse("0.0"),
-                            "Risk Level 2", Optional.ofNullable(predictPossibility.getRisk2()).orElse("0.0"),
-                            "Risk Level 3", Optional.ofNullable(predictPossibility.getRisk3()).orElse("0.0"),
-                            "Risk Level 4", Optional.ofNullable(predictPossibility.getRisk4()).orElse("0.0")
-                    );
 
                     // PredictRiskResponseDTO 반환
                     return new PredictRiskResponseDTO(
                             predict.getLatitude(),
                             predict.getLongitude(),
-                            predict.getPredictClass(),
-                            riskLevelProbabilities
+                            predict.getPredictCnt(),
+                            predict.getDangerous()
                     );
                 })
                 .collect(Collectors.toList());

@@ -1,7 +1,10 @@
 package com.example.AISafety.domain.predict;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -23,9 +26,9 @@ public class Predict {
     private double latitude;
     private double longitude;
 
-    private String predictClass;
+    private double predictCnt;
 
-    @Embedded
-    PredictPossibility predictPossibility;
+    @Enumerated(EnumType.STRING)
+    private Dangerous dangerous;
 
 }
