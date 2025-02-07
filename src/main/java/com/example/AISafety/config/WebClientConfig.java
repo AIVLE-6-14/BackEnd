@@ -9,6 +9,6 @@ public class WebClientConfig {
 
     @Bean
     public WebClient webClient() {
-        return WebClient.create("http://localhost:8000"); // 기본 URL 설정 (필요한 경우 수정)
+        return WebClient.create("http://3.37.210.75/ai"); // 기본 URL 설정 (필요한 경우 수정)
     }
 }
