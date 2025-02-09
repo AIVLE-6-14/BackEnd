@@ -43,6 +43,8 @@ public class SecurityConfig {
                                 "/api/users/duplicate", // 이메일 중복 체크
                                 "/api/users/logout", //로그아웃
                                 "/api/animals/fetch", // 동물감지 등록
+                                "/api/auth/register",
+                                "/api/auth/verify",
                                 "/api/organizations/**" // 기관 등록
                         ).permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
