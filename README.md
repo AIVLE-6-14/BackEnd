@@ -1,4 +1,4 @@
-# 맴버 : BackEnd 박연규, DBA + BackEnd 김영인
+# BackEnd 맴버 : 박연규, 김영인
 
 # AISafety API
 
