@@ -3,16 +3,20 @@ package com.example.AISafety.domain.user.controller;
 import com.example.AISafety.domain.user.dto.UserSignupDTO;
 import com.example.AISafety.domain.user.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
+import java.security.SecureRandom;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
 public class UserMailAuthController {
 
     private final EmailService emailService;
+    private final Map<String, String> verificationCodes = new HashMap<>();
 
     @Autowired
     public UserMailAuthController(EmailService emailService) {
@@ -20,34 +24,70 @@ public class UserMailAuthController {
     }
 
     /**
-     * 회원가입 요청 처리
-     * 메일 인증을 위해 이메일로 링크 발송
-     * @param userRequest 회원 요청 정보 (이메일)
-     * @return 인증 메일 발송 메시지
+     * 회원가입 요청 처리 - 6자리 인증 코드 발송
      */
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody UserSignupDTO.UserRequest userRequest) {
-        // 고유 토큰 생성
-        String token = UUID.randomUUID().toString();
+    public ResponseEntity<Map<String, Object>> registerUser(@RequestBody UserSignupDTO userSignupDTO) {
+        Map<String, Object> response = new HashMap<>();
+        boolean emailSent = false;
 
-        // 인증 링크 생성
-        String verificationLink = "http://localhost:8080/api/auth/verify?token=" + token;
+        try {
+            // 랜덤 6자리 코드 생성
+            String verificationCode = generateVerificationCode();
 
-        // 메일 발송
-        emailService.sendEmail(userRequest.getEmail(), "회원가입 인증",
-                "다음 링크를 클릭하여 인증을 완료하세요: " + verificationLink);
+            // 인증 코드 저장 (실제 DB 사용 권장)
+            verificationCodes.put(userSignupDTO.getEmail(), verificationCode);
 
-        return ResponseEntity.ok("인증 메일이 발송되었습니다. 메일에서 링크를 확인하세요.");
+            // 메일 발송
+            emailService.sendEmail(
+                    userSignupDTO.getEmail(),
+                    "회원가입 인증 코드",
+                    //"인증 코드: " + verificationCode + "를 입력하여 회원가입을 완료하세요."
+                    verificationCode
+            );
+
+            emailSent = true;
+            response.put("SUCCESS", "인증 코드가 이메일로 발송되었습니다.");
+        } catch (Exception e) {
+            response.put("FAIL", "이메일 발송에 실패했습니다. 관리자에게 문의하세요.");
+        }
+
+        response.put("message", emailSent);
+        return ResponseEntity.ok(response);
     }
 
+
     /**
-     * 이메일 인증 확인 메소드
-     * @param token 이메일 인증 토큰
-     * @return 인증 성공 메시지
+     * 이메일 인증 코드 검증
      */
-    @GetMapping("/verify")
-    public ResponseEntity<String> verifyUser(@RequestParam String token) {
-        // TODO: 실제 토큰 검증 로직 추가
-        return ResponseEntity.ok("인증 성공! 이제 로그인 가능합니다.");
+    @PostMapping("/verify")
+    public ResponseEntity<Map<String, Object>> verifyUser(@RequestParam String email, @RequestParam String code) {
+        Map<String, Object> response = new HashMap<>();
+        boolean verificationResult = false;
+
+        if (verificationCodes.containsKey(email) && verificationCodes.get(email).equals(code)) {
+            verificationCodes.remove(email);  // 인증 완료 후 코드 제거
+            verificationResult = true;
+            response.put("SUCCESS", "메일 인증 성공");
+        } else {
+            response.put("FAIL", "인증 코드가 유효하지 않거나 이메일이 잘못되었습니다.");
+        }
+
+        response.put("message", verificationResult); // Boolean 값 추가
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
+    /**
+     * 랜덤 6자리 숫자/문자 코드 생성 메소드
+     */
+    private String generateVerificationCode() {
+        SecureRandom random = new SecureRandom();
+        StringBuilder code = new StringBuilder();
+        String charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        for (int i = 0; i < 6; i++) {
+            code.append(charset.charAt(random.nextInt(charset.length())));
+        }
+        return code.toString();
     }
 }
