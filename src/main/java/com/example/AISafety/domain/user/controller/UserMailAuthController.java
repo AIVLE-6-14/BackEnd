@@ -60,30 +60,8 @@ public class UserMailAuthController {
     /**
      * 이메일 인증 코드 검증
      */
-//    @PostMapping("/verify")
-//    public ResponseEntity<Map<String, Object>> verifyUser(@RequestParam String email, @RequestParam String code) {
-//        Map<String, Object> response = new HashMap<>();
-//        boolean verificationResult = false;
-//
-//        if (verificationCodes.containsKey(email) && verificationCodes.get(email).equals(code)) {
-//            verificationCodes.remove(email);  // 인증 완료 후 코드 제거
-//            verificationResult = true;
-//            response.put("SUCCESS", "메일 인증 성공");
-//        } else {
-//            response.put("FAIL", "인증 코드가 유효하지 않거나 이메일이 잘못되었습니다.");
-//        }
-//
-//        response.put("message", verificationResult); // Boolean 값 추가
-//        return new ResponseEntity<>(response, HttpStatus.OK);
-//    }
-    /**
-     * 이메일 인증 코드 검증
-     */
     @PostMapping("/verify")
-    public ResponseEntity<Map<String, Object>> verifyUser(@RequestBody Map<String, String> body) {
-        String email = body.get("email");
-        String code = body.get("code");
-
+    public ResponseEntity<Map<String, Object>> verifyUser(@RequestParam String email, @RequestParam String code) {
         Map<String, Object> response = new HashMap<>();
         boolean verificationResult = false;
 
